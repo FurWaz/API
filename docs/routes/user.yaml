@@ -1,0 +1,376 @@
+users:
+  post:
+    summary: Create user
+    description: Create a new user
+    operationId: createuser
+    tags:
+      - Users
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pseudo:
+                type: string
+                example: FurWaz
+              email:
+                type: string
+                example: fur.waz06@gmail.com
+              password:
+                type: string
+                example: Password123$
+    responses:
+      '200':
+        description: User created
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User created successfully
+                data:
+                  type: object
+                  properties:
+                    user:
+                      $ref: '../schemas.yaml#/PrivateUser'
+      '400':
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Password is required.
+      '409':
+        description: Already exists
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User already exists.
+      '417':
+        description: Expectation failed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Password should contain at least 1 number.
+                field:
+                  type: string
+                  example: password
+      '500':
+        $ref: '#/components/responses/internalError'
+users-id:
+  get:
+    summary: Get user
+    description: Get a user
+    operationId: getuser
+    tags:
+      - Users
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - name: id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: integer
+          example: 621
+    responses:
+      '200':
+        description: User fetched
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User fetched successfully
+                data:
+                  type: object
+                  properties:
+                    user:
+                      $ref: '../schemas.yaml#/PublicUser'
+      '400':
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Id is required.
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '417':
+        description: Expectation failed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Password should contain at least 1 number.
+                field:
+                  type: string
+                  example: password
+      '500':
+        $ref: '#/components/responses/internalError'
+  patch:
+    summary: Update user
+    description: Update a user
+    operationId: updateuser
+    tags:
+      - Users
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - name: id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: integer
+          example: 621
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pseudo:
+                type: string
+                example: FurWaz
+              email:
+                type: string
+                example: fur.waz06@gmail.com
+    responses:
+      '200':
+        description: User updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User updated successfully
+                data:
+                  type: object
+                  properties:
+                    user:
+                      $ref: '../schemas.yaml#/PublicUser'
+      '400':
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Id is required.
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '417':
+        description: Expectation failed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Password should contain at least 1 number.
+                field:
+                  type: string
+                  example: password
+      '500':
+        $ref: '#/components/responses/internalError'
+  delete:
+    summary: Delete user
+    description: Delete a user
+    operationId: deleteuser
+    tags:
+      - Users
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - name: id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: integer
+          example: 621
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+                example: Password123$
+    responses:
+      '200':
+        description: User deleted
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User deleted successfully
+      '400':
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Id is required.
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '#/components/responses/internalError'
+
+users-me:
+  get:
+    summary: Get my user
+    description: Get user informations for the given token
+    operationId: getmyuser
+    tags:
+      - Users
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - $ref: '../parameters.yaml#/Authorization'
+    responses:
+      '200':
+        description: User fetched
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User fetched successfully
+                data:
+                  type: object
+                  properties:
+                    user:
+                      $ref: '../schemas.yaml#/PrivateUser'
+      '400':
+        $ref: '../responses.yaml#/authBadRequest'
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '../responses.yaml#/internalError'
+  patch:
+    summary: Update my user
+    description: Update user informations for the given token
+    operationId: updatemyuser
+    tags:
+      - Users
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - $ref: '../parameters.yaml#/Authorization'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pseudo:
+                type: string
+                example: FurWaz
+              email:
+                type: string
+                example: fur.waz06@gmail.com
+    responses:
+      '200':
+        description: User updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User updated successfully
+                data:
+                  type: object
+                  properties:
+                    user:
+                      $ref: '../schemas.yaml#/PrivateUser'
+      '400':
+        $ref: '../responses.yaml#/authBadRequest'
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '../responses.yaml#/internalError'
+  delete:
+    summary: Delete my user
+    description: Delete user informations for the given token
+    operationId: deletemyuser
+    tags:
+      - Users
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - $ref: '../parameters.yaml#/Authorization'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+                example: Password123$
+    responses:
+      '200':
+        description: User updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: User updated successfully
+      '400':
+        $ref: '../responses.yaml#/authBadRequest'
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '../responses.yaml#/internalError'

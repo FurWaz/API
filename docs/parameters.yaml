@@ -1,0 +1,24 @@
+Accept-Language:
+  name: Accept-Language
+  in: header
+  description: The language wanted for message translations
+  required: false
+  schema:
+    type: string
+    default: en
+    enum:
+      - en
+      - fr
+
+Authorization:
+  name : Authorization
+  in: header
+  description: The access or refresh token, or the email and password in base64
+  required: true
+  schema:
+    type: string
+    default: Basic base64(email):base64(password)
+    enum:
+      - Basic base64(email):base64(password)
+      - Access access_token
+      - Refresh refresh_token

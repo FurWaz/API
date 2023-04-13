@@ -1,0 +1,17 @@
+{
+  "enabled": true, // true to enable mail sending
+  "settings": {
+    "secure": true, // true if using SSL
+    "host": "localhost",
+    "port": 25,
+    "email": "<mail address>",
+    "dkim": {
+      "domainName": "<mail domain>",
+      "selector": "<mail selector>",
+      "privKeyPath": "<path to dkim priv key>"
+    }
+  },
+  "devMode": {
+    "overrideTo": "<your email address>"
+  }
+}

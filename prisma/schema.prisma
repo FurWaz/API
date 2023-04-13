@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+// Represents a user
+// -> email (the email of the user)
+// -> password (the hashed password of the user)
+// -> role (the role of the user)
+// -> links (connections to an app)
+// -> apps (created by the user)
+// -> devices (used to connect to the app)
+// -> lastPasswordReset (the last time the password reset email has been sent)
+// -> lastEmailVerif (the last time the email verification email has been sent)
+// -> emailVerifiedAt (the date the email has been verified)
+model User {
+    id                Int          @id @default(autoincrement())
+    pseudo            String       @default("") @db.VarChar(64)
+    email             String       @unique @db.VarChar(255)
+    password          String       @db.Text
+    role_id           Int          @db.Int
+    role              Role         @relation("role", fields: [role_id], references: [id], onDelete: Cascade)
+    links             Link[]       @relation("user")
+    apps              App[]        @relation("author")
+    devices           UserDevice[] @relation("user")
+    send_email        Boolean      @default(false)
+    lastPasswordReset DateTime?
+    lastEmailVerif    DateTime?
+    emailVerifiedAt   DateTime?
+    createdAt         DateTime     @default(now())
+    updatedAt         DateTime     @updatedAt
+}
+
+// Represents a device used to connect to the app
+// -> connections (all the connections made with this device)
+// -> user (the user that used this device for connections)
+// -> user_agent (the user agent of the device)
+// -> mac_addr (the mac address of the device)
+model UserDevice {
+    id          Int          @id @default(autoincrement())
+    hash        String       @unique @db.VarChar(64)
+    user_id     Int?         @db.Int
+    user        User?        @relation("user", fields: [user_id], references: [id], onDelete: Cascade)
+    connections Connection[] @relation("device")
+    user_agent  String       @db.VarChar(256)
+}
+
+// Represents an ip and its location
+// -> ip (the ip of the connection)
+// -> country (the country of the connection)
+// -> city (the city of the connection)
+// -> zip (the zip code of the connection)
+// -> latitude (the latitude of the connection)
+// -> longitude (the longitude of the connection)
+// -> connections (all the connections made with this ip)
+model IPLocation {
+    id        Int            @id @default(autoincrement())
+    ip        String         @db.VarChar(64)
+    country   String         @db.VarChar(64)
+    city      String         @db.VarChar(64)
+    zip       String         @db.VarChar(16)
+    latitude  Float          @db.Float
+    longitude Float          @db.Float
+    connections Connection[] @relation("ip_loc")
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+}
+
+// Represents a connection made by a user
+// -> device (the device used for the connection)
+// -> ip_loc (the ip and location of the connection)
+model Connection {
+    id        Int         @id @default(autoincrement())
+    device_id Int         @db.Int
+    device    UserDevice  @relation("device", fields: [device_id], references: [id], onDelete: Cascade)
+    ip_loc_id Int         @db.Int
+    ip_loc    IPLocation  @relation("ip_loc", fields: [ip_loc_id], references: [id], onDelete: Cascade)
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+}
+
+// Represents a role
+// -> name (the name of the role)
+// -> users (all the users with this role)
+model Role {
+    id        Int         @id @default(autoincrement())
+    name      String      @unique @db.VarChar(64)
+    users     User[]      @relation("role")
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+}
+
+// Represents an app
+// -> name (the name of the app)
+// -> desccription (the description of the app)
+// -> key (the secret key of the app)
+// -> author (the author of the app)
+// -> links (all the user that connected to the app through the portal)
+model App {
+    id           Int      @id @default(autoincrement())
+    name         String   @db.VarChar(64)
+    description  String   @db.Text
+    key          String   @db.VarChar(64)
+    verified     Boolean  @default(false)
+    author_id    Int      @db.Int
+    author       User     @relation("author", fields: [author_id], references: [id], onDelete: Cascade)
+    links        Link[]   @relation("app")
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
+
+// Represents a link between a user and an app (a user connection to an app through the portal)
+// this is used to know which user connected to which app
+// and if the portla should ask for manual validation or not at login (only for first connection)
+// -> app (the app)
+// -> user (the user)
+model Link {
+    id        Int      @id @default(autoincrement())
+    app_id    Int      @db.Int
+    app       App      @relation("app", fields: [app_id], references: [id], onDelete: Cascade)
+    user_id   Int      @db.Int
+    user      User     @relation("user", fields: [user_id], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

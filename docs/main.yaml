@@ -1,0 +1,28 @@
+openapi: 3.0.3
+info:
+  title: FurWaz Main API
+  description: Main FurWaz's API
+  version: 1.0.0
+  contact:
+    name: FurWaz
+    email: 'fur.waz06@gmail.com'
+  license:
+    name: GNU General Public License v3.0
+    url: 'https://www.gnu.org/licenses/gpl-3.0.en.html'
+servers:
+  - url: 'https://main.apis.furwaz.fr'
+    description: FurWaz server
+
+paths:
+  /auth/token:
+    $ref: 'routes/auth.yaml#/auth-token'
+  /users:
+    $ref: 'routes/user.yaml#/users'
+  /users/:id:
+    $ref: 'routes/user.yaml#/users-id'
+  /users/me:
+    $ref: 'routes/user.yaml#/users-me'
+  /apps:
+    $ref: 'routes/apps.yaml#/apps'
+  /apps/:id:
+    $ref: 'routes/apps.yaml#/apps-id'

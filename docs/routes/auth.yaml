@@ -1,0 +1,42 @@
+auth-token:
+  get:
+    summary: Login or refresh token
+    description: Login to an account or refresh the access token
+    operationId: auth
+    tags:
+      - Auth
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - $ref: '../parameters.yaml#/Authorization'
+
+    responses:
+      '200':
+        description: Logged in
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Logged in successfully
+                data:
+                  type: object
+                  properties:
+                    tokens:
+                      type: object
+                      properties:
+                        access:
+                          type: string
+                          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                        refresh:
+                          type: string
+                          example: eyJhbGciOiJIUzI1NiIscCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fPOk6yJV_adQssw5c
+      '400':
+        $ref: '../responses.yaml#/authBadRequest'
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '#/components/responses/internalError'

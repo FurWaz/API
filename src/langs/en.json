@@ -1,0 +1,124 @@
+{
+    "code": "en",
+    "name": "English",
+    "lang": {
+        "error": {
+            "generic": {
+                "db": "An error occurred while connecting to the database",
+                "noUpdateInfos": "No informations given for update",
+                "routeNotFound": "The route was not found",
+                "internalError": "An internal error occurred",
+                "notEnoughPerms": "Not enough permissions"
+            },
+
+            "documentation": {
+                "favicon": "An error occurred while loading the favicon"
+            },
+
+            "auth": {
+                "noToken": "No token provided",
+                "invalidToken": "The provided token is invalid",
+                "invalidTokenType": "The provided token should be of type Basic, Access or Refresh",
+                "expiredToken": "The provided token has expired",
+                "emailNotVerified": "The email address has not been verified"
+            },
+
+            "pseudo": {
+                "required": "The pseudo is required",
+                "type": "The pseudo must be a string",
+                "length": "The pseudo must be between 2 and 64 characters"
+            },
+
+            "email": {
+                "required": "The email address is required",
+                "invalid": "The email address is invalid",
+                "type": "The email address must be a string",
+                "taken": "The email address is already taken",
+                "length": "The email address must be between 6 and 255 characters"
+            },
+
+            "name": {
+                "required": "The name is required",
+                "invalid": "The name is invalid",
+                "type": "The name must be a string"
+            },
+
+            "id": {
+                "required": "The id is required",
+                "type": "The id must be a number"
+            },
+
+            "password": {
+                "required": "The password is required",
+                "type": "The password must be a string",
+                "length": "The password must be at least 8 characters",
+                "upper": "The password must contain at least one uppercase letter",
+                "lower": "The password must contain at least one lowercase letter",
+                "number": "The password must contain at least one number",
+                "special": "The password must contain at least one special character"
+            },
+
+            "level": {
+                "required": "The level is required",
+                "type": "The level must be a string",
+                "tooHigh": "The level must be between 1 and 3"
+            },
+
+            "boolean": {
+                "required": "The value is required",
+                "type": "The value must be a boolean"
+            },
+
+            "date": {
+                "required": "The date is required",
+                "type": "The date must be a string",
+                "invalid": "The date is invalid"
+            },
+
+            "phone": {
+                "required": "The phone number is required",
+                "type": "The phone number must be a string",
+                "invalid": "The phone number is invalid"
+            },
+            
+            "number": {
+                "required": "The number is required",
+                "type": "The number must be a number",
+                "invalid": "The number is invalid"
+            },
+
+            "string": {
+                "required": "The value is required",
+                "type": "The value must be a string"
+            },
+
+            "user": {
+                "alreadyExists": "The user already exists",
+                "notFound": "The user cannot be found",
+                "wrongPassword": "The password is incorrect"
+            },
+
+            "app": {
+                "notFound": "The app cannot be found",
+                "notYours": "The app does not belong to you",
+                "maxPerUser": "You have reached the maximum number of apps you could have"
+            }
+        },
+        
+        "info": {
+            "user": {
+                "registered": "User registered successfully",
+                "logged": "User logged in successfully",
+                "fetched": "User fetched successfully",
+                "updated": "User updated successfully",
+                "deleted": "User deleted successfully"
+            },
+            "app": {
+                "created": "App created successfully",
+                "fetched": "App fetched successfully",
+                "updated": "App updated successfully",
+                "deleted": "App deleted successfully"
+            }
+        }
+    }
+}
