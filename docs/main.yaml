@@ -12,6 +12,15 @@ info:
 servers:
   - url: 'https://main.apis.furwaz.fr'
     description: FurWaz server
+  - url: 'http://localhost:8080'
+    description: Local server
+
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
 paths:
   /auth/token:
@@ -26,3 +35,7 @@ paths:
     $ref: 'routes/apps.yaml#/apps'
   /apps/:id:
     $ref: 'routes/apps.yaml#/apps-id'
+  /portal:
+    $ref: 'routes/portal.yaml#/portal'
+  /portal/:token:
+    $ref: 'routes/portal.yaml#/portal-token'

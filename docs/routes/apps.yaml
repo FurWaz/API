@@ -5,6 +5,8 @@ apps:
     operationId: createapp
     tags:
       - Apps
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
     requestBody:
@@ -138,6 +140,8 @@ apps-id:
     operationId: updateapp
     tags:
       - Apps
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - name: id
@@ -210,6 +214,8 @@ apps-id:
     operationId: deleteapp
     tags:
       - Apps
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - name: id

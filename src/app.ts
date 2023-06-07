@@ -35,7 +35,9 @@ app.get('/', (req, res) => {
 
 app.use('/docs', require('./routes/docs'));
 app.use('/auth', translation, require('./routes/auth'));
+app.use('/apps', translation, require('./routes/apps'));
 app.use('/users', translation, dbNeeded, logConnection, require('./routes/users'));
+app.use('/portal', translation, dbNeeded, logConnection, require('./routes/portal'));
 
 app.use(translation, (req, res) => {
     new ErrLog(res.locals.lang.error.generic.routeNotFound, Log.CODE.NOT_FOUND).sendTo(res);

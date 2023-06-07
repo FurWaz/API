@@ -60,6 +60,23 @@ export function create (req: express.Request, res: express.Response) {
     });
 };
 
+export function get (req: express.Request, res: express.Response) {
+    const id = sanitizer.sanitizeIdField(req.params.id, req, res);
+    if (id === null) return;
+
+    prisma.app.findUnique({ where: { id } }).then(app => {
+        if (app === null) {
+            new ErrLog(res.locals.lang.error.app.notFound, Log.CODE.NOT_FOUND).sendTo(res);
+            return;
+        }
+
+        new ResLog(res.locals.lang.info.app.fetched, { app }).sendTo(res);
+    }).catch((err) => {
+        console.error(err);
+        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+    });
+}
+
 export function update (req: express.Request, res: express.Response) {
     const { name, description } = req.body;
     const id = sanitizer.sanitizeIdField(req.params.id, req, res);

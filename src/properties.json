@@ -48,5 +48,8 @@
     },
     "apps": {
         "maxPerUser": 5
+    },
+    "portal": {
+        "tokenExpiration": 900000
     }
 }

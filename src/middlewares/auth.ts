@@ -57,26 +57,42 @@ module.exports = (req: express.Request, res: express.Response, next: express.Nex
                 const verified = verifyToken(token);
                 const decoded = (verified as jwt.JwtPayload);
                 const id = decoded.id;
-                const role = decoded.role;
                 const type = decoded.type;
 
                 const idFilled = (id !== undefined);
-                const roleFilled = (role !== undefined);
                 const typeFilled = (type !== undefined);
-                const roleValid = roleFilled !== isAuthUrl;
 
-                if (!typeFilled || type !== properties.token.type.user) {
+                if (!typeFilled) {
                     new ErrLog(res.locals.lang.error.auth.invalidTokenType, Log.CODE.NOT_ACCEPTABLE).sendTo(res);
                     return;
                 }
 
-                if (!idFilled || !roleValid) {
-                    new ErrLog(res.locals.lang.error.auth.invalidToken, Log.CODE.NOT_ACCEPTABLE).sendTo(res);
-                    return;
+                switch (type) {
+                    case properties.token.type.user: {
+                        console.log('token type user found');
+                        const role = decoded.role;
+                        const roleFilled = (role !== undefined);
+                        const roleValid = roleFilled !== isAuthUrl;
+
+                        if (!idFilled || !roleValid) {
+                            new ErrLog(res.locals.lang.error.auth.invalidToken, Log.CODE.NOT_ACCEPTABLE).sendTo(res);
+                            return;
+                        }
+                        res.locals.user = roleFilled ? { id, role } : { id };
+                        res.locals.token = { type: roleFilled ? 'access' : 'refresh' };
+                        break;
+                    }
+                    case properties.token.type.app: {
+                        console.log('token type app found');
+                        res.locals.app = { id };
+                        res.locals.token = { type: 'access' };
+                        break;
+                    }
+                    default:
+                        new ErrLog(res.locals.lang.error.auth.invalidTokenType, Log.CODE.NOT_ACCEPTABLE).sendTo(res);
+                        return;
                 }
 
-                res.locals.user = roleFilled ? { id, role } : { id };
-                res.locals.token = { type: roleFilled ? 'access' : 'refresh' };
                 next();
                 break;
             }

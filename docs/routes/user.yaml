@@ -80,6 +80,8 @@ users-id:
     operationId: getuser
     tags:
       - Users
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - name: id
@@ -140,6 +142,8 @@ users-id:
     operationId: updateuser
     tags:
       - Users
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - name: id
@@ -212,6 +216,8 @@ users-id:
     operationId: deleteuser
     tags:
       - Users
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - name: id
@@ -265,6 +271,8 @@ users-me:
     operationId: getmyuser
     tags:
       - Users
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - $ref: '../parameters.yaml#/Authorization'
@@ -298,6 +306,8 @@ users-me:
     operationId: updatemyuser
     tags:
       - Users
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - $ref: '../parameters.yaml#/Authorization'
@@ -343,6 +353,8 @@ users-me:
     operationId: deletemyuser
     tags:
       - Users
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - $ref: '../parameters.yaml#/Authorization'

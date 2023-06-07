@@ -102,6 +102,12 @@
                 "notFound": "The app cannot be found",
                 "notYours": "The app does not belong to you",
                 "maxPerUser": "You have reached the maximum number of apps you could have"
+            },
+
+            "portal": {
+                "invalidToken": "The portal token is invalid",
+                "expiredToken": "The portal token is expired",
+                "alreadyUsed": "The portal token has already been used"
             }
         },
         
@@ -118,6 +124,10 @@
                 "fetched": "App fetched successfully",
                 "updated": "App updated successfully",
                 "deleted": "App deleted successfully"
+            },
+            "portal": {
+                "generated": "Portal token generated successfully",
+                "connected": "Portal user connected successfully"
             }
         }
     }

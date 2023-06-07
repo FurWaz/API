@@ -87,3 +87,6 @@ PublicApp:
     createdAt:
       type: string
       format: date-time
+PortalToken:
+  type: string
+  example: 29edcbf359509ff0ffef4d80e489b3187a2fb148cd20c8852673ead02474bea4

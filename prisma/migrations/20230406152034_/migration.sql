@@ -109,3 +109,7 @@ ALTER TABLE `Link` ADD CONSTRAINT `Link_app_id_fkey` FOREIGN KEY (`app_id`) REFE
 
 -- AddForeignKey
 ALTER TABLE `Link` ADD CONSTRAINT `Link_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+INSERT INTO `Role` (`id`, `name`) VALUES
+(1, 'user'),
+(2, 'admin');
