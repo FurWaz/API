@@ -24,6 +24,8 @@ export function PrivateApp (app: App): any {
 
 export function PublicApp (app: App): any {
     const obj: any = Object.assign({}, app);
+    obj.author = PublicUser(obj.author);
     delete obj.key;
+    delete obj.author_id;
     return obj;
 }

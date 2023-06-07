@@ -5,6 +5,8 @@ auth-token:
     operationId: auth
     tags:
       - Auth
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - $ref: '../parameters.yaml#/Authorization'

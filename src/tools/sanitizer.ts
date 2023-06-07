@@ -30,36 +30,36 @@ function sanitizeBooleanField (input: any, req: express.Request, res: express.Re
 function sanitizePseudoField (input: any, req: express.Request, res: express.Response): string | null {
     const pseudo = sanitizeStringField(input, req, res);
     if (pseudo === null) return null;
-    if (!validator.checkPseudoField(input, req, res)) return null;
-    return input;
+    if (!validator.checkPseudoField(pseudo, req, res)) return null;
+    return pseudo;
 }
 
 function sanitizeEmailField (input: any, req: express.Request, res: express.Response): string | null {
     const email = sanitizeStringField(input, req, res);
     if (email === null) return null;
-    if (!validator.checkEmailField(input, req, res)) return null;
-    return input;
+    if (!validator.checkEmailField(email, req, res)) return null;
+    return email;
 }
 
 function sanitizeIdField (input: any, req: express.Request, res: express.Response): number | null {
     const id = sanitizeNumberField(input, req, res);
     if (id === null) return null;
     if (!validator.checkIdField(id, req, res)) return null;
-    return input;
+    return id;
 }
 
 function sanitizePasswordField (input: any, req: express.Request, res: express.Response): string | null {
     const password = sanitizeStringField(input, req, res);
     if (password === null) return null;
-    if (!validator.checkPasswordField(input, req, res)) return null;
-    return input;
+    if (!validator.checkPasswordField(password, req, res)) return null;
+    return password;
 }
 
 function sanitizeRoleField (input: any, req: express.Request, res: express.Response): number | null {
     const role = sanitizeNumberField(input, req, res);
     if (role === null) return null;
-    if (!validator.checkRoleField(input, req, res)) return null;
-    return input;
+    if (!validator.checkRoleField(role, req, res)) return null;
+    return role;
 }
 
 export {

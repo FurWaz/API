@@ -6,6 +6,7 @@ import { Log, ErrLog, ResLog } from '../tools/log';
 import { type App } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import properties from '../properties.json';
+import { PublicApp } from '../tools/formatter';
 const SECRET_KEY = process.env.JWT_SECRET ?? 'secret';
 
 function createAppKey (app: App): string {
@@ -64,13 +65,13 @@ export function get (req: express.Request, res: express.Response) {
     const id = sanitizer.sanitizeIdField(req.params.id, req, res);
     if (id === null) return;
 
-    prisma.app.findUnique({ where: { id } }).then(app => {
+    prisma.app.findUnique({ where: { id }, include: { author: true } }).then(app => {
         if (app === null) {
             new ErrLog(res.locals.lang.error.app.notFound, Log.CODE.NOT_FOUND).sendTo(res);
             return;
         }
 
-        new ResLog(res.locals.lang.info.app.fetched, { app }).sendTo(res);
+        new ResLog(res.locals.lang.info.app.fetched, { app: PublicApp(app) }).sendTo(res);
     }).catch((err) => {
         console.error(err);
         new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);

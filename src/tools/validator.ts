@@ -218,17 +218,17 @@ function checkPhoneField (phone: any, req: express.Request, res: express.Respons
  */
 function checkNumberField (nbr: any, req: express.Request, res: express.Response): boolean {
     if (nbr === undefined || nbr === '' || nbr === null) {
-        new ErrLog(res.locals.error.number.required, Log.CODE.BAD_REQUEST).sendTo(res);
+        new ErrLog(res.locals.lang.error.number.required, Log.CODE.BAD_REQUEST).sendTo(res);
         return false;
     }
 
     if (typeof nbr !== 'number') {
-        new ErrLog(res.locals.error.number.type, Log.CODE.BAD_REQUEST).sendTo(res);
+        new ErrLog(res.locals.lang.error.number.type, Log.CODE.BAD_REQUEST).sendTo(res);
         return false;
     }
 
     if (isNaN(Number(nbr))) {
-        new ErrLog(res.locals.error.number.type, Log.CODE.EXPECTATION_FAILED).sendTo(res);
+        new ErrLog(res.locals.lang.error.number.type, Log.CODE.EXPECTATION_FAILED).sendTo(res);
         return false;
     }
 
