@@ -83,7 +83,7 @@ apps:
                   type: string
                   example: You have reached the maximum number of apps you could have
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'
 apps-id:
   get:
     summary: Get app
@@ -131,7 +131,7 @@ apps-id:
       '406':
         $ref: '../responses.yaml#/authNotAcceptable'
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'
   patch:
     summary: Update upp
     description: Update a upp
@@ -203,7 +203,7 @@ apps-id:
                   type: string
                   example: name
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'
   delete:
     summary: Delete app
     description: Delete a app
@@ -245,4 +245,4 @@ apps-id:
       '406':
         $ref: '../responses.yaml#/authNotAcceptable'
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'

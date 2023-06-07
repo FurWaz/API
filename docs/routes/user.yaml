@@ -72,7 +72,7 @@ users:
                   type: string
                   example: password
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'
 users-id:
   get:
     summary: Get user
@@ -133,7 +133,7 @@ users-id:
                   type: string
                   example: password
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'
   patch:
     summary: Update user
     description: Update a user
@@ -205,7 +205,7 @@ users-id:
                   type: string
                   example: password
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'
   delete:
     summary: Delete user
     description: Delete a user
@@ -256,7 +256,7 @@ users-id:
       '406':
         $ref: '../responses.yaml#/authNotAcceptable'
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'
 
 users-me:
   get:

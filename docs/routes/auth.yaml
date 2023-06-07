@@ -39,4 +39,4 @@ auth-token:
       '406':
         $ref: '../responses.yaml#/authNotAcceptable'
       '500':
-        $ref: '#/components/responses/internalError'
+        $ref: '../responses.yaml#/internalError'

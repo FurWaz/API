@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>FurWaz API</title>
-  <link rel="icon" type="image/x-icon" href="/docs/favicon">
-  <!-- needed for adaptive design -->
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!--
-  Redoc doesn't change outer page styles
-  -->
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="SwaggerUI"
+  />
+  <title>SwaggerUI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
 </head>
 <body>
-<redoc spec-url='/docs/main.yaml'></redoc>
-<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"> </script>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+<script>
+  window.onload = () => {
+    window.ui = SwaggerUIBundle({
+      url: '/docs/main.yaml',
+      dom_id: '#swagger-ui',
+    });
+  };
+</script>
 </body>
 </html>

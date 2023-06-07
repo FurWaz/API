@@ -7,3 +7,5 @@ mail.config.json
 db/
 /docs/out/
 *.log
+mail/
+.vscode/

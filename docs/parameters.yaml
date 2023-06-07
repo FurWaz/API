@@ -17,8 +17,8 @@ Authorization:
   required: true
   schema:
     type: string
-    default: Basic base64(email):base64(password)
+    default: Bearer access_token
     enum:
-      - Basic base64(email):base64(password)
-      - Access access_token
-      - Refresh refresh_token
+      - Basic base64(email:password)
+      - Bearer access_token
+      - Bearer refresh_token
