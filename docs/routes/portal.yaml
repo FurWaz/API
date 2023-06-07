@@ -1,4 +1,4 @@
-portal:
+portal-generate:
   get:
     summary: Generate portal token
     description: Generate a new portal token
