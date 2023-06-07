@@ -69,7 +69,7 @@ CREATE TABLE `App` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(64) NOT NULL,
     `description` TEXT NOT NULL,
-    `key` VARCHAR(64) NOT NULL,
+    `key` VARCHAR(256) NOT NULL,
     `verified` BOOLEAN NOT NULL DEFAULT false,
     `author_id` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

@@ -7,7 +7,8 @@ import { hashPassword } from '../controllers/auth';
 
 async function getIpObj (ip: string): Promise<IPLocation> {
     return new Promise((resolve, reject) => {
-        if (ip === '' || ip.startsWith('127.0') || ip.startsWith('192.168') || ip.startsWith('::1')) {
+        if (ip.startsWith('::ffff:')) ip = ip.slice(7);
+        if (ip === '' || ip.startsWith('127.0') || ip.startsWith('192.168')) {
             reject(new Error('IP is invalid (' + ip + ')'));
             return;
         }

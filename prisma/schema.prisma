@@ -107,7 +107,7 @@ model App {
     id           Int      @id @default(autoincrement())
     name         String   @db.VarChar(64)
     description  String   @db.Text
-    key          String   @db.VarChar(64)
+    key          String   @db.VarChar(256)
     verified     Boolean  @default(false)
     author_id    Int      @db.Int
     author       User     @relation("author", fields: [author_id], references: [id], onDelete: Cascade)
