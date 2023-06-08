@@ -19,6 +19,10 @@ export function PublicUser (user: User): any {
 
 export function PrivateApp (app: App): any {
     const obj: any = Object.assign({}, app);
+    if (obj.author !== undefined) {
+        obj.author = PrivateUser(obj.author);
+        delete obj.author_id;
+    }
     return obj;
 }
 

@@ -1,4 +1,50 @@
 apps:
+  get:
+    summary: Get all apps
+    description: Get all apps
+    operationId: getallapps
+    tags:
+      - Apps
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - $ref: '../parameters.yaml#/Pagination-Offset'
+      - $ref: '../parameters.yaml#/Pagination-Limit'
+    responses:
+      '200':
+        description: Apps fetched
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Apps fetched successfully
+                data:
+                  type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '../schemas.yaml#/PublicApp'
+                    pagination:
+                      $ref: '../schemas.yaml#/Pagination'
+      '400':
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Id is required.
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '../responses.yaml#/internalError'
   post:
     summary: Create app
     description: Create a new app
@@ -246,6 +292,55 @@ apps-id:
                 message:
                   type: string
                   example: Id is required
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '../responses.yaml#/internalError'
+apps-my:
+  get:
+    summary: Get my apps
+    description: Get all my apps
+    operationId: getmyapps
+    tags:
+      - Apps
+    security:
+      - bearerAuth: []
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - $ref: '../parameters.yaml#/Pagination-Offset'
+      - $ref: '../parameters.yaml#/Pagination-Limit'
+    responses:
+      '200':
+        description: Apps fetched
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Apps fetched successfully
+                data:
+                  type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '../schemas.yaml#/PublicApp'
+                    pagination:
+                      $ref: '../schemas.yaml#/Pagination'
+      '400':
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Id is required.
       '403':
         $ref: '../responses.yaml#/forbidden'
       '406':

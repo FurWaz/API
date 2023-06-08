@@ -35,6 +35,8 @@ paths:
     $ref: 'routes/apps.yaml#/apps'
   /apps/{id}:
     $ref: 'routes/apps.yaml#/apps-id'
+  /apps/my:
+    $ref: 'routes/apps.yaml#/apps-my'
   /portal/generate:
     $ref: 'routes/portal.yaml#/portal-generate'
   /portal/{token}:

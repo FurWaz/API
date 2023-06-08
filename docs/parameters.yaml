@@ -22,3 +22,23 @@ Authorization:
       - Basic base64(email:password)
       - Bearer access_token
       - Bearer refresh_token
+
+Pagination-Offset:
+  name: offset
+  in: query
+  description: The page number
+  required: false
+  schema:
+    type: integer
+    default: 0
+    example: 0
+
+Pagination-Limit:
+  name: limit
+  in: query
+  description: The number of items per page
+  required: false
+  schema:
+    type: integer
+    default: 10
+    example: 10

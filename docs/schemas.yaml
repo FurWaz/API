@@ -90,3 +90,15 @@ PublicApp:
 PortalToken:
   type: string
   example: 29edcbf359509ff0ffef4d80e489b3187a2fb148cd20c8852673ead02474bea4
+Pagination:
+  type: object
+  properties:
+    offset:
+      type: integer
+      example: 1
+    limit:
+      type: integer
+      example: 10
+    total:
+      type: integer
+      example: 621

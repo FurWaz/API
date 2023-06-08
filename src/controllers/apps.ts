@@ -6,7 +6,8 @@ import { Log, ErrLog, ResLog } from '../tools/log';
 import { type App } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import properties from '../properties.json';
-import { PublicApp } from '../tools/formatter';
+import { PrivateApp, PublicApp } from '../tools/formatter';
+import { getPaginationParameters, createPaginationResult } from '../tools/pagination';
 const SECRET_KEY = process.env.JWT_SECRET ?? 'secret';
 
 function createAppKey (app: App): string {
@@ -73,6 +74,52 @@ export function get (req: express.Request, res: express.Response) {
 
         new ResLog(res.locals.lang.info.app.fetched, { app: PublicApp(app) }).sendTo(res);
     }).catch((err) => {
+        console.error(err);
+        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+    });
+}
+
+export function getmy (req: express.Request, res: express.Response) {
+    console.log('getmy => ', req.query)
+    const paginationParameters = getPaginationParameters(req, res);
+
+    prisma.app.count({
+        where: { author_id: res.locals.user.id }
+    }).then((total) => {
+        prisma.app.findMany({
+            where: { author_id: res.locals.user.id },
+            include: { author: true },
+            skip: paginationParameters.offset * paginationParameters.limit,
+            take: paginationParameters.limit
+        }).then((apps: App[]) => {
+            paginationParameters.total = total;
+            new ResLog(res.locals.lang.info.app.fetched, createPaginationResult(apps.map(app => PrivateApp(app)), paginationParameters)).sendTo(res);
+        }).catch(err => {
+            console.error(err);
+            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+        });
+    }).catch(err => {
+        console.error(err);
+        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+    });
+}
+
+export function getall (req: express.Request, res: express.Response) {
+    const paginationParameters = getPaginationParameters(req, res);
+
+    prisma.app.count().then((total) => {
+        prisma.app.findMany({
+            include: { author: true },
+            skip: paginationParameters.offset,
+            take: paginationParameters.limit
+        }).then((apps: App[]) => {
+            paginationParameters.total = total;
+            new ResLog(res.locals.lang.info.app.fetched, createPaginationResult(apps.map(app => PublicApp(app)), paginationParameters)).sendTo(res);
+        }).catch(err => {
+            console.error(err);
+            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+        });
+    }).catch(err => {
         console.error(err);
         new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
     });

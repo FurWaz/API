@@ -64,5 +64,5 @@ export function getToken (req: express.Request, res: express.Response) {
         ? { access: createAccessToken(user) }
         : createTokens(user);
 
-    new ResLog(res.locals.lang.info.user.logged, { tokens }, Log.CODE.CREATED).sendTo(res);
+    new ResLog(res.locals.lang.info.user.logged, { tokens }, Log.CODE.OK).sendTo(res);
 }
