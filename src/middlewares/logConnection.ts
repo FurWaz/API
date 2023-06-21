@@ -84,7 +84,14 @@ async function getDeviceObj (hash: string, agent: string, userId: number | null,
                 }
                 : {
                     user_agent: agent,
-                    user_id: userId
+                    OR: {
+                        user_id: userId,
+                        connections: {
+                            some: {
+                                ip_loc_id: ipLocation?.id
+                            }
+                        }
+                    }
                 };
             prisma.userDevice.findFirst({
                 where: condition
