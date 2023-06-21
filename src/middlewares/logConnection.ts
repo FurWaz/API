@@ -9,8 +9,13 @@ async function getIpObj (ip: string): Promise<IPLocation> {
     return new Promise((resolve, reject) => {
         if (ip.startsWith('::ffff:')) ip = ip.slice(7);
         if (ip === '' || ip.startsWith('127.0') || ip.startsWith('192.168')) {
-            reject(new Error('IP is invalid (' + ip + ')'));
-            return;
+            if (process.env.NODE_ENV === 'development') {
+                console.log('IP is invalid (' + ip + ') : changing to dummy ip [123.45.67.89]');
+                ip = '123.45.67.89';
+            } else {
+                reject(new Error('IP is invalid (' + ip + ')'));
+                return;
+            }
         }
 
         prisma.iPLocation.findFirst({ where: { ip } }).then(ipLocation => {
@@ -50,7 +55,7 @@ async function getIpObj (ip: string): Promise<IPLocation> {
     });
 };
 
-async function getDeviceObj (hash: string, agent: string, userId: number | null, ipLocation: IPLocation | null): Promise<UserDevice> {
+async function getDeviceObj (hash: string | undefined, agent: string, userId: number | null, ipLocation: IPLocation | null): Promise<UserDevice> {
     return new Promise((resolve, reject) => {
         const createNewDevice = async (): Promise<UserDevice> => {
             return new Promise((resolve, reject) => {
@@ -84,22 +89,33 @@ async function getDeviceObj (hash: string, agent: string, userId: number | null,
                 }
                 : {
                     user_agent: agent,
-                    OR: {
-                        user_id: userId,
-                        connections: {
-                            some: {
-                                ip_loc_id: ipLocation?.id
+                    OR: [
+                        { user_id: userId },
+                        {
+                            connections: {
+                                some: {
+                                    ip_loc_id: ipLocation?.id
+                                }
                             }
                         }
-                    }
+                    ]
                 };
-            prisma.userDevice.findFirst({
+            console.log('Searching with condition : ' + JSON.stringify(condition));
+            prisma.userDevice.findMany({
                 where: condition
-            }).then(userDevice => {
-                if (userDevice === null) {
+            }).then(userDevices => {
+                console.log('result : ', userDevices);
+                if (userDevices === null) {
+                    console.log('userDevices is null');
                     createNewDevice().then(resolve).catch(reject);
                     return;
                 }
+                if (userDevices.length === 0) {
+                    console.log('userDevices is empty');
+                    createNewDevice().then(resolve).catch(reject);
+                    return;
+                }
+                const userDevice = userDevices[0];
 
                 if (userDevice.user_id === null) {
                     prisma.userDevice.update({
@@ -173,7 +189,7 @@ module.exports = (req: express.Request, res: express.Response, next: express.Nex
     const ip = req.headers['x-forwarded-for']?.toString() ?? req.ip;
     const agent = req.headers['user-agent'] ?? 'agent';
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const deviceHash = req.headers['device']?.toString() ?? '';
+    const deviceHash = req.headers['device']?.toString() ?? undefined;
     const userId = res.locals.user?.id ?? null;
 
     if (ip === undefined) {

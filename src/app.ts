@@ -7,7 +7,7 @@ const translation = require('./middlewares/translation');
 const logConnection = require('./middlewares/logConnection');
 
 const settings: any = { errorFormat: 'pretty' };
-// const settingsDebug: any = { errorFormat: 'pretty', log: ['query', 'info', 'warn'] };
+// const settings: any = { errorFormat: 'pretty', log: ['query', 'info', 'warn'] };
 const prisma = new PrismaClient(settings);
 
 const app = express();
