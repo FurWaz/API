@@ -21,7 +21,7 @@ async function getIpObj (ip: string): Promise<IPLocation> {
                         data: {
                             ip,
                             country: infos.country,
-                            city: infos.country,
+                            city: infos.city,
                             zip: infos.zip,
                             latitude: infos.lat,
                             longitude: infos.lon
