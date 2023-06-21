@@ -73,17 +73,21 @@ async function getDeviceObj (hash: string, agent: string, userId: number | null,
         };
 
         if (hash === undefined) { // device hash may not be sent by the client, in this case we search with user agent + ip
-            prisma.userDevice.findFirst({
-                where: {
+            const condition = userId === null
+                ? {
                     user_agent: agent,
                     connections: {
                         some: {
-                            ip_loc: {
-                                ip: ipLocation?.ip
-                            }
+                            ip_loc_id: ipLocation?.id
                         }
                     }
                 }
+                : {
+                    user_agent: agent,
+                    user_id: userId
+                };
+            prisma.userDevice.findFirst({
+                where: condition
             }).then(userDevice => {
                 if (userDevice === null) {
                     createNewDevice().then(resolve).catch(reject);
@@ -108,7 +112,7 @@ async function getDeviceObj (hash: string, agent: string, userId: number | null,
                 return;
             }
 
-            if (userDevice.user_id === null) { // user logged in from new device
+            if (userDevice.user_id === null && userId !== null) { // user logged in from new device
                 prisma.userDevice.update({
                     where: { id: userDevice.id },
                     data: { user_id: userId }
