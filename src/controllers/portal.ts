@@ -66,11 +66,6 @@ export function generate (req: express.Request, res: express.Response) {
 }
 
 export function retreive (req: express.Request, res: express.Response) {
-    if (res.locals.app === undefined) {
-        new ErrLog(res.locals.lang.error.auth.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
     const token = sanitizer.sanitizeStringField(req.params.token, req, res);
     if (token === null) return;
 
