@@ -38,6 +38,8 @@ portal-token:
     operationId: getPortalUser
     tags:
       - Portal
+    security:
+      - bearerAuth: []
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - name: token

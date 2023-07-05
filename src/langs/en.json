@@ -106,6 +106,7 @@
 
             "portal": {
                 "invalidToken": "The portal token is invalid",
+                "forbidden": "You are not allowed to access this portal",
                 "expiredToken": "The portal token is expired",
                 "alreadyUsed": "The portal token has already been used"
             }

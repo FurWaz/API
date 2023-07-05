@@ -69,6 +69,12 @@ export function retreive (req: express.Request, res: express.Response) {
     const token = sanitizer.sanitizeStringField(req.params.token, req, res);
     if (token === null) return;
 
+    const app = res.locals.app;
+    if (app === undefined) {
+        new ErrLog(res.locals.lang.error.auth.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
+        return;
+    }
+
     const portalToken = portalTokens.find((portalToken) => portalToken.token === token);
     if (portalToken === undefined) {
         new ErrLog(res.locals.lang.error.portal.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
@@ -77,6 +83,11 @@ export function retreive (req: express.Request, res: express.Response) {
 
     if (portalToken.isExpired()) {
         new ErrLog(res.locals.lang.error.portal.expiredToken, Log.CODE.FORBIDDEN).sendTo(res);
+        return;
+    }
+
+    if (portalToken.appId !== app.id) {
+        new ErrLog(res.locals.lang.error.portal.forbidden, Log.CODE.FORBIDDEN).sendTo(res);
         return;
     }
 
