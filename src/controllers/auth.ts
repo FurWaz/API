@@ -3,7 +3,8 @@ import { type User } from '@prisma/client';
 import properties from '../properties.json';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { Log, ResLog } from '../tools/log';
+import { ErrLog, Log, ResLog } from '../tools/log';
+import { prisma } from '../app';
 
 const refreshInfos = (user: User) => ({ type: properties.token.type.user, id: user.id });
 const accessInfos = (user: User) => ({ type: properties.token.type.user, id: user.id, role: user.role_id });
@@ -58,11 +59,18 @@ export function verifyToken (token: string): any {
 }
 
 export function getToken (req: express.Request, res: express.Response) {
-    const user = res.locals.user;
+    prisma.user.findUnique({ where: { id: res.locals.user.id } }).then(user => {
+        if (user === null) {
+            new ErrLog(res.locals.lang.error.user.notFound, Log.CODE.FORBIDDEN).sendTo(res);
+        } else {
+            const tokens = res.locals.token.type === 'refresh'
+                ? { access: createAccessToken(user) }
+                : createTokens(user);
 
-    const tokens = res.locals.token.type === 'refresh'
-        ? { access: createAccessToken(user) }
-        : createTokens(user);
-
-    new ResLog(res.locals.lang.info.user.logged, { tokens }, Log.CODE.OK).sendTo(res);
+            new ResLog(res.locals.lang.info.user.logged, { tokens }, Log.CODE.OK).sendTo(res);
+        }
+    }).catch(err => {
+        console.error(err);
+        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR, err).sendTo(res);
+    });
 }
