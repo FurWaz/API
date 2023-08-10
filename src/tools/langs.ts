@@ -1,6 +1,7 @@
 import en from '../langs/en.json';
+import fr from '../langs/fr.json';
 
-const Langs: any[] = [en];
+const Langs: any[] = [en, fr];
 
 class Lang {
     private readonly _data: any;
@@ -53,12 +54,12 @@ function getLang (code: string) {
     }
 
     code = sanitizeCode(code);
-    if (!Langs.map(l => l.value).includes(code)) {
+    if (!Langs.map(l => l.code).includes(code)) {
         code = defaultCode;
     }
 
-    let lang = code === defaultCode ? defaultLang : Langs.find(l => l.code === code)?.data;
-    if (lang === undefined) lang = defaultLang;
+    let lang = (code === defaultCode) ? defaultLang : Langs.find(l => l.code === code);
+    if (lang === undefined || lang === null) lang = defaultLang;
 
     return createLanguage(lang);
 }
