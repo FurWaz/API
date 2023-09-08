@@ -25,6 +25,8 @@ components:
 paths:
   /auth/token:
     $ref: 'routes/auth.yaml#/auth-token'
+  /auth/verify:
+    $ref: 'routes/auth.yaml#/auth-verify'
   /users:
     $ref: 'routes/user.yaml#/users'
   /users/{id}:

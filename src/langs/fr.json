@@ -109,6 +109,12 @@
                 "forbidden": "Vous n'avez pas accès à ce portail",
                 "expiredToken": "Le jeton de portail a expiré",
                 "alreadyUsed": "Le jeton de portail a déjà été utilisé"
+            },
+
+            "token": {
+                "missing": "Le jeton est manquant",
+                "invalid": "Le jeton est invalide",
+                "expired": "Le jeton a expiré"
             }
         },
         
@@ -120,15 +126,21 @@
                 "updated": "Utilisateur mis à jour avec succès",
                 "deleted": "Utilisateur supprimé avec succès"
             },
+
             "app": {
                 "created": "L'appli a été crée avec succès",
                 "fetched": "L'appli a été récupérée avec succès",
                 "updated": "L'appli a été mise à jour avec succès",
                 "deleted": "L'appli a été supprimée avec succès"
             },
+
             "portal": {
-                "generated": "jeton de portail généré avec succès",
+                "generated": "Jeton de portail généré avec succès",
                 "connected": "Connecté au portail avec succès"
+            },
+
+            "token": {
+                "verified": "Jeton vérifié avec succès"
             }
         }
     }

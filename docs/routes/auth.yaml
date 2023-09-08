@@ -2,7 +2,7 @@ auth-token:
   get:
     summary: Login or refresh token
     description: Login to an account or refresh the access token
-    operationId: auth
+    operationId: authtoken
     tags:
       - Auth
     security:
@@ -40,5 +40,40 @@ auth-token:
         $ref: '../responses.yaml#/forbidden'
       '406':
         $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '../responses.yaml#/internalError'
+auth-verify:
+  get:
+    summary: Verify token
+    description: Verify and parse a given access or refresh token
+    operationId: authverif
+    tags:
+      - Auth
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+
+    responses:
+      '200':
+        description: Token verified and correctly parsed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Token verified successfully 
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: user
+                    id:
+                      type: number
+                      example: 621
+                    role:
+                      type: number
+                      example: 1
       '500':
         $ref: '../responses.yaml#/internalError'

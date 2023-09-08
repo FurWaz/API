@@ -109,6 +109,12 @@
                 "forbidden": "You are not allowed to access this portal",
                 "expiredToken": "The portal token is expired",
                 "alreadyUsed": "The portal token has already been used"
+            },
+
+            "token": {
+                "missing": "The token is missing",
+                "invalid": "The token is invalid",
+                "expired": "The token has expired"
             }
         },
         
@@ -120,15 +126,21 @@
                 "updated": "User updated successfully",
                 "deleted": "User deleted successfully"
             },
+
             "app": {
                 "created": "App created successfully",
                 "fetched": "App fetched successfully",
                 "updated": "App updated successfully",
                 "deleted": "App deleted successfully"
             },
+
             "portal": {
                 "generated": "Portal token generated successfully",
                 "connected": "Portal user connected successfully"
+            },
+
+            "token": {
+                "verified": "Token verified successfully"
             }
         }
     }
