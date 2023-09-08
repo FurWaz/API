@@ -78,24 +78,18 @@ export function getToken (req: express.Request, res: express.Response) {
 export function getVerify (req: express.Request, res: express.Response) {
     try {
         const givenToken = req.query.token as string;
-        console.log('getVerify on ' + givenToken);
         if (givenToken === undefined) {
-            console.log('givenToken is undefined');
             new ErrLog(res.locals.lang.error.token.missing, Log.CODE.BAD_REQUEST).sendTo(res);
             return;
         }
 
         const decodedToken = verifyToken(givenToken);
         if (typeof decodedToken === 'string') {
-            console.log('decodedToken is a string');
             new ErrLog(res.locals.lang.error.token.invalid, Log.CODE.UNAUTHORIZED).sendTo(res);
             return;
         }
-        console.log('decodedToken is a jwt.JwtPayload');
-        console.log(decodedToken);
         new ResLog(res.locals.lang.info.token.verified, decodedToken, Log.CODE.OK).sendTo(res);
     } catch (err) {
-        console.error(err);
         if (err instanceof jwt.TokenExpiredError) {
             new ErrLog(res.locals.lang.error.token.expired, Log.CODE.UNAUTHORIZED).sendTo(res);
         } else if (err instanceof jwt.JsonWebTokenError) {

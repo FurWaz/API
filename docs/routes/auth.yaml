@@ -77,3 +77,13 @@ auth-verify:
                       example: 1
       '500':
         $ref: '../responses.yaml#/internalError'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Token is invalid ( invalid signature )
