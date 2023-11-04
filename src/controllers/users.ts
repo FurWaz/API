@@ -16,19 +16,14 @@ export async function _login (email: string, password: string, req: express.Requ
                 return;
             }
 
-            hashPassword(password).then((hash) => {
-                verifyPassword(hash, user.password).then(result => {
-                    if (result) {
-                        reject(new ErrLog(res.locals.lang.error.user.wrongPassword, Log.CODE.FORBIDDEN));
-                        return;
-                    }
+            verifyPassword(password, user.password).then(result => {
+                if (!result) {
+                    reject(new ErrLog(res.locals.lang.error.user.wrongPassword, Log.CODE.FORBIDDEN));
+                    return;
+                }
 
-                    resolve(user);
-                }).catch(err => {
-                    console.error(err);
-                    reject(new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR));
-                });
-            }).catch((err) => {
+                resolve(user);
+            }).catch(err => {
                 console.error(err);
                 reject(new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR));
             });
