@@ -31,7 +31,7 @@ portal-generate:
         $ref: '../responses.yaml#/authNotAcceptable'
       '500':
         $ref: '../responses.yaml#/internalError'
-portal-token:
+portal-user:
   get:
     summary: Get portal user
     description: Get the connected portal user
@@ -43,7 +43,7 @@ portal-token:
     parameters:
       - $ref: '../parameters.yaml#/Accept-Language'
       - name: token
-        in: path
+        in: query
         description: Portal token
         required: true
         schema:
@@ -80,6 +80,54 @@ portal-token:
         $ref: '../responses.yaml#/authNotAcceptable'
       '500':
         $ref: '../responses.yaml#/internalError'
+portal-app:
+  get:
+    summary: Get portal app
+    description: Get the portal app informations
+    operationId: getPortalApp
+    tags:
+      - Portal
+    parameters:
+      - $ref: '../parameters.yaml#/Accept-Language'
+      - name: token
+        in: query
+        description: Portal token
+        required: true
+        schema:
+          $ref: '../schemas.yaml#/PortalToken'
+    responses:
+      '200':
+        description: Portal app retreived
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Portal app retreived successfully
+                data:
+                  type: object
+                  properties:
+                    app:
+                      $ref: '../schemas.yaml#/PublicApp'
+      '400':
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Token is required.
+      '403':
+        $ref: '../responses.yaml#/forbidden'
+      '406':
+        $ref: '../responses.yaml#/authNotAcceptable'
+      '500':
+        $ref: '../responses.yaml#/internalError'
+portal-token:
   post:
     summary: Connect portal user
     description: Connect a portal user

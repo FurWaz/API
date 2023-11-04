@@ -65,8 +65,8 @@ export function generate (req: express.Request, res: express.Response) {
     new ResLog(res.locals.lang.info.portal.generated, { token }).sendTo(res);
 }
 
-export function retreive (req: express.Request, res: express.Response) {
-    const token = sanitizer.sanitizeStringField(req.params.token, req, res);
+export function retreiveUser (req: express.Request, res: express.Response) {
+    const token = sanitizer.sanitizeStringField(req.query.token, req, res);
     if (token === null) return;
 
     const app = res.locals.app;
@@ -97,6 +97,34 @@ export function retreive (req: express.Request, res: express.Response) {
     }
 
     portalToken.setResponse(res);
+}
+
+export function retreiveApp (req: express.Request, res: express.Response) {
+    const token = sanitizer.sanitizeStringField(req.query.token, req, res);
+    if (token === null) return;
+
+    const portalToken = portalTokens.find((portalToken) => portalToken.token === token);
+    if (portalToken === undefined) {
+        new ErrLog(res.locals.lang.error.portal.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
+        return;
+    }
+
+    if (portalToken.isExpired()) {
+        new ErrLog(res.locals.lang.error.portal.expiredToken, Log.CODE.FORBIDDEN).sendTo(res);
+        return;
+    }
+
+    prisma.app.findUnique({ where: { id: portalToken.appId }, include: { author: true } }).then(app => {
+        if (app === null) {
+            new ErrLog(res.locals.lang.error.app.notFound, Log.CODE.FORBIDDEN).sendTo(res);
+            return;
+        }
+
+        new ResLog(res.locals.lang.info.app.retreived, { app }).sendTo(res);
+    }).catch(err => {
+        console.error(err);
+        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR, err).sendTo(res);
+    });
 }
 
 export function connect (req: express.Request, res: express.Response) {
