@@ -65,7 +65,7 @@ Here is a non-exhaustive list of projects using this API (for Users management o
     - [API](https://fullbowody.apis.furwaz.fr) hosted on FurWaz's server.
 
 - [VyBeen](https://vybeen.projects.furwaz.fr) : A web application to listen to music with your friends.
-    - [Source code](https://github.com/VVyBeen) hosted on GitHub.
+    - [Source code](https://github.com/VyBeen) hosted on GitHub.
     - [Website](https://vybeen.projects.furwaz.fr) hosted on FurWaz's server.
     - [API](https://vybeen.apis.furwaz.fr) hosted on FurWaz's server.
 
