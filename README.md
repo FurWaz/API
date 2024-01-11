@@ -73,3 +73,9 @@ Here is a non-exhaustive list of projects using this API (for Users management o
     - [Source code](https://github.com/FurWaz/Website) hosted on GitHub.
     - [Website](https://furwaz.fr) hosted on FurWaz's server.
     - [API](https://main.apis.furwaz.fr) hosted on FurWaz's server.
+
+## License
+This project is licensed under the [GPL-3.0 License](./LICENSE).
+
+## Contact
+For further information, you can contact me at [contact@furwaz.fr](mailto:contact@furwaz.fr).
