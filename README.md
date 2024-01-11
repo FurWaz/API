@@ -1,2 +1,0 @@
-# API
-Main FurWaz API

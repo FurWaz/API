@@ -62,7 +62,7 @@ export function create (req: express.Request, res: express.Response) {
         }
 
         hashPassword(password).then((hash) => {
-            prisma.user.create({ data: { pseudo, email, password: hash, role_id: 1 } }).then((user: User) => {
+            prisma.user.create({ data: { pseudo, email, password: hash, roleId: 1 } }).then((user: User) => {
                 const tokens = createTokens(user);
                 new ResLog(res.locals.lang.info.user.registered, { user: Formatter.PrivateUser(user), tokens }, Log.CODE.CREATED).sendTo(res);
             }).catch((err) => {

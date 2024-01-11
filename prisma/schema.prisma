@@ -17,25 +17,54 @@ datasource db {
 // -> links (connections to an app)
 // -> apps (created by the user)
 // -> devices (used to connect to the app)
+// -> carts (the carts of the user)
+// -> products (the products purchased by the user)
+// -> checkouts (the checkouts made by the user)
 // -> lastPasswordReset (the last time the password reset email has been sent)
 // -> lastEmailVerif (the last time the email verification email has been sent)
 // -> emailVerifiedAt (the date the email has been verified)
 model User {
-    id                Int          @id @default(autoincrement())
-    pseudo            String       @default("") @db.VarChar(64)
-    email             String       @unique @db.VarChar(255)
-    password          String       @db.Text
-    role_id           Int          @db.Int
-    role              Role         @relation("role", fields: [role_id], references: [id], onDelete: Cascade)
-    links             Link[]       @relation("user")
-    apps              App[]        @relation("author")
-    devices           UserDevice[] @relation("user")
-    send_email        Boolean      @default(false)
+    id                Int           @id @default(autoincrement())
+    pseudo            String        @default("") @db.VarChar(64)
+    email             String        @unique @db.VarChar(255)
+    password          String        @db.Text
+    roleId            Int           @db.Int
+    role              Role          @relation("role", fields: [roleId], references: [id], onDelete: Cascade)
+    profile           Profile?
+    links             Link[]        @relation("user")
+    apps              App[]         @relation("author")
+    devices           UserDevice[]  @relation("user")
+    carts             Cart[]        @relation("cart")
+    products          UserProduct[] @relation("user")
+    checkouts         Checkout[]    @relation("user")
+    send_email        Boolean       @default(false)
     lastPasswordReset DateTime?
     lastEmailVerif    DateTime?
     emailVerifiedAt   DateTime?
-    createdAt         DateTime     @default(now())
-    updatedAt         DateTime     @updatedAt
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt
+}
+
+// Represents a user profile
+// -> id (the profile id)
+// -> userId (the profile's user's id)
+// -> firstname (the firstname of the user)
+// -> lastname (the lastname of the user)
+// -> adress (the adress of the user)
+// -> city (the city of the user)
+// -> zipcode (the zip code of the user)
+model Profile {
+    id        Int      @id @default(autoincrement())
+    userId    Int      @unique
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    firstname String   @db.VarChar(64)
+    lastname  String   @db.VarChar(64)
+    adress    String   @db.VarChar(255)
+    city      String   @db.VarChar(64)
+    zipcode   String   @db.VarChar(16)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
 }
 
 // Represents a device used to connect to the app
@@ -46,8 +75,8 @@ model User {
 model UserDevice {
     id          Int          @id @default(autoincrement())
     hash        String       @unique @db.VarChar(64)
-    user_id     Int?         @db.Int
-    user        User?        @relation("user", fields: [user_id], references: [id], onDelete: Cascade)
+    userId      Int?         @db.Int
+    user        User?        @relation("user", fields: [userId], references: [id], onDelete: Cascade)
     connections Connection[] @relation("device")
     user_agent  String       @db.VarChar(256)
 }
@@ -78,10 +107,10 @@ model IPLocation {
 // -> ip_loc (the ip and location of the connection)
 model Connection {
     id        Int         @id @default(autoincrement())
-    device_id Int         @db.Int
-    device    UserDevice  @relation("device", fields: [device_id], references: [id], onDelete: Cascade)
-    ip_loc_id Int         @db.Int
-    ip_loc    IPLocation  @relation("ip_loc", fields: [ip_loc_id], references: [id], onDelete: Cascade)
+    deviceId  Int         @db.Int
+    device    UserDevice  @relation("device", fields: [deviceId], references: [id], onDelete: Cascade)
+    ip_locId  Int         @db.Int
+    ip_loc    IPLocation  @relation("ip_loc", fields: [ip_locId], references: [id], onDelete: Cascade)
     createdAt DateTime    @default(now())
     updatedAt DateTime    @updatedAt
 }
@@ -104,16 +133,17 @@ model Role {
 // -> author (the author of the app)
 // -> links (all the user that connected to the app through the portal)
 model App {
-    id           Int      @id @default(autoincrement())
-    name         String   @db.VarChar(64)
-    description  String   @db.Text
-    key          String   @db.VarChar(256)
-    verified     Boolean  @default(false)
-    author_id    Int      @db.Int
-    author       User     @relation("author", fields: [author_id], references: [id], onDelete: Cascade)
-    links        Link[]   @relation("app")
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    id           Int       @id @default(autoincrement())
+    name         String    @db.VarChar(64)
+    description  String    @db.Text
+    key          String    @db.VarChar(256)
+    verified     Boolean   @default(false)
+    authorId     Int       @db.Int
+    author       User      @relation("author", fields: [authorId], references: [id], onDelete: Cascade)
+    links        Link[]    @relation("app")
+    products     Product[] @relation("product")
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
 }
 
 // Represents a link between a user and an app (a user connection to an app through the portal)
@@ -123,10 +153,117 @@ model App {
 // -> user (the user)
 model Link {
     id        Int      @id @default(autoincrement())
-    app_id    Int      @db.Int
-    app       App      @relation("app", fields: [app_id], references: [id], onDelete: Cascade)
-    user_id   Int      @db.Int
-    user      User     @relation("user", fields: [user_id], references: [id], onDelete: Cascade)
+    appId     Int      @db.Int
+    app       App      @relation("app", fields: [appId], references: [id], onDelete: Cascade)
+    userId    Int      @db.Int
+    user      User     @relation("user", fields: [userId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+
+// Represents a cart
+// -> id (the cart id)
+// -> userId (the cart's owner user id)
+model Cart {
+    id        Int           @id @default(autoincrement())
+    userId    Int           @db.Int
+    user      User          @relation("cart", fields: [userId], references: [id], onDelete: Cascade)
+    products  CartProduct[] @relation("cart")
+    checkout  Checkout?
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+}
+
+// Represents a cart product
+// -> id (the cart product id)
+// -> cartId (the cart id)
+// -> productId (the product id)
+// -> quantity (the quantity of the product in the cart)
+model CartProduct {
+    id         Int      @id @default(autoincrement())
+    cartId     Int      @db.Int
+    cart       Cart     @relation("cart", fields: [cartId], references: [id], onDelete: Cascade)
+    productId  Int      @db.Int
+    product    Product  @relation("product", fields: [productId], references: [id], onDelete: Cascade)
+    quantity   Int      @default(1)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+// Represents a product
+// -> id (the product id)
+// -> name (the product name)
+// -> description (the product description)
+// -> price (the product price)
+// -> app (the app that created the product)
+model Product {
+    id          Int           @id @default(autoincrement())
+    name        String        @db.VarChar(64)
+    description String        @db.Text
+    price       Float         @db.Float
+    appId       Int           @db.Int
+    app         App           @relation("product", fields: [appId], references: [id], onDelete: Cascade)
+    carts       CartProduct[] @relation("product")
+    users       UserProduct[] @relation("product")
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+}
+
+// Represents a product purchased by a user
+// -> id (the purchase id)
+// -> userId (the user id)
+// -> productId (the product id)
+// -> quantity (the quantity of the product purchased)
+model UserProduct {
+    id         Int        @id @default(autoincrement())
+    userId     Int        @db.Int
+    user       User       @relation("user", fields: [userId], references: [id], onDelete: Cascade)
+    productId  Int        @db.Int
+    product    Product    @relation("product", fields: [productId], references: [id], onDelete: Cascade)
+    quantity   Int        @default(1)
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+}
+
+// Represents a checkout session
+// -> id (the checkout session id)
+// -> userId (the user id)
+// -> cartId (the cart id)
+// -> firstname (the firstname of the user)
+// -> lastname (the lastname of the user)
+// -> email (the email of the user)
+// -> adress (the adress of the user)
+// -> city (the city of the user)
+// -> zipcode (the zip code of the user)
+// -> status (the status of the checkout session)
+// -> intentId (the payment intent id)
+model Checkout {
+    id         Int            @id @default(autoincrement())
+    userId    Int             @db.Int
+    user       User           @relation("user", fields: [userId], references: [id], onDelete: Cascade)
+    cartId     Int            @unique
+    cart       Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    firstname  String         @db.VarChar(64)
+    lastname   String         @db.VarChar(64)
+    email      String         @db.VarChar(255)
+    adress     String         @db.VarChar(255)
+    city       String         @db.VarChar(64)
+    zipcode    String         @db.VarChar(16)
+    statusId   Int            @unique
+    status     CheckoutStatus @relation("status", fields: [statusId], references: [id], onDelete: Cascade)
+    intentId   String         @db.VarChar(64)
+    createdAt  DateTime       @default(now())
+    updatedAt  DateTime       @updatedAt
+}
+
+// Represents a checkout status
+// -> id (the checkout status id)
+// -> name (the checkout status name)
+model CheckoutStatus {
+    id        Int        @id @default(autoincrement())
+    name      String     @unique @db.VarChar(64)
+    checkouts Checkout[] @relation("status")
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
 }

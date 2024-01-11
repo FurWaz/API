@@ -128,10 +128,24 @@
             },
 
             "app": {
-                "created": "L'appli a été crée avec succès",
+                "created": "L'appli a été créée avec succès",
                 "fetched": "L'appli a été récupérée avec succès",
                 "updated": "L'appli a été mise à jour avec succès",
                 "deleted": "L'appli a été supprimée avec succès"
+            },
+
+            "product": {
+                "created": "Le produit a été créé avec succès",
+                "fetched": "Le produit a été récupéré avec succès",
+                "updated": "Le produit a été mis à jour avec succès",
+                "deleted": "Le produit a été supprimé avec succès"
+            },
+
+            "cart": {
+                "created": "Le panier a été créé avec succès",
+                "fetched": "Le panier a été récupéré avec succès",
+                "updated": "Le panier a été mis à jour avec succès",
+                "deleted": "Le panier a été supprimé avec succès"
             },
 
             "portal": {

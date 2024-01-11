@@ -26,7 +26,7 @@ export function create (req: express.Request, res: express.Response) {
 
     prisma.app.count({
         where: {
-            author_id: res.locals.user.id
+            authorId: res.locals.user.id
         }
     }).then((count) => {
         if (count >= properties.apps.maxPerUser) {
@@ -38,7 +38,7 @@ export function create (req: express.Request, res: express.Response) {
             data: {
                 name,
                 description,
-                author_id: res.locals.user.id,
+                authorId: res.locals.user.id,
                 key: ''
             }
         }).then((app: App) => {
@@ -84,10 +84,10 @@ export function getmy (req: express.Request, res: express.Response) {
     const paginationParameters = getPaginationParameters(req, res);
 
     prisma.app.count({
-        where: { author_id: res.locals.user.id }
+        where: { authorId: res.locals.user.id }
     }).then((total) => {
         prisma.app.findMany({
-            where: { author_id: res.locals.user.id },
+            where: { authorId: res.locals.user.id },
             include: { author: true },
             skip: paginationParameters.offset * paginationParameters.limit,
             take: paginationParameters.limit
@@ -140,7 +140,7 @@ export function update (req: express.Request, res: express.Response) {
         }
 
         const app = apps[0];
-        if (app.author_id !== res.locals.user.id && res.locals.user.role !== properties.role.admin) {
+        if (app.authorId !== res.locals.user.id && res.locals.user.role !== properties.role.admin) {
             new ErrLog(res.locals.lang.error.app.notYours, Log.CODE.FORBIDDEN).sendTo(res);
             return;
         }
@@ -175,7 +175,7 @@ export function remove (req: express.Request, res: express.Response) {
         }
 
         const app = apps[0];
-        if (app.author_id !== res.locals.user.id && res.locals.user.role !== properties.role.admin) {
+        if (app.authorId !== res.locals.user.id && res.locals.user.role !== properties.role.admin) {
             new ErrLog(res.locals.lang.error.app.notYours, Log.CODE.FORBIDDEN).sendTo(res);
             return;
         }

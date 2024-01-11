@@ -64,7 +64,7 @@ async function getDeviceObj (hash: string | undefined, agent: string, userId: nu
                         data: {
                             hash,
                             user_agent: agent,
-                            user_id: userId
+                            userId: userId
                         }
                     }).then(userDevice => {
                         resolve(userDevice);
@@ -83,18 +83,18 @@ async function getDeviceObj (hash: string | undefined, agent: string, userId: nu
                     user_agent: agent,
                     connections: {
                         some: {
-                            ip_loc_id: ipLocation?.id
+                            ip_locId: ipLocation?.id
                         }
                     }
                 }
                 : {
                     user_agent: agent,
                     OR: [
-                        { user_id: userId },
+                        { userId: userId },
                         {
                             connections: {
                                 some: {
-                                    ip_loc_id: ipLocation?.id
+                                    ip_locId: ipLocation?.id
                                 }
                             }
                         }
@@ -117,10 +117,10 @@ async function getDeviceObj (hash: string | undefined, agent: string, userId: nu
                 }
                 const userDevice = userDevices[0];
 
-                if (userDevice.user_id === null) {
+                if (userDevice.userId === null) {
                     prisma.userDevice.update({
                         where: { id: userDevice.id },
-                        data: { user_id: userId }
+                        data: { userId: userId }
                     }).then(resolve).catch(reject);
                 } else resolve(userDevice);
             }).catch(err => {
@@ -135,10 +135,10 @@ async function getDeviceObj (hash: string | undefined, agent: string, userId: nu
                 return;
             }
 
-            if (userDevice.user_id === null && userId !== null) { // user logged in from new device
+            if (userDevice.userId === null && userId !== null) { // user logged in from new device
                 prisma.userDevice.update({
                     where: { id: userDevice.id },
-                    data: { user_id: userId }
+                    data: { userId: userId }
                 }).then(resolve).catch(reject);
             } else resolve(userDevice);
         }).catch(err => {
@@ -153,8 +153,8 @@ async function getConnection (ipLocation: IPLocation, userDevice: UserDevice): P
             return new Promise((resolve, reject) => {
                 prisma.connection.create({
                     data: {
-                        ip_loc_id: ipLocation.id,
-                        device_id: userDevice.id
+                        ip_locId: ipLocation.id,
+                        deviceId: userDevice.id
                     }
                 }).then(resolve).catch(reject);
             });
@@ -162,8 +162,8 @@ async function getConnection (ipLocation: IPLocation, userDevice: UserDevice): P
 
         prisma.connection.findFirst({
             where: {
-                ip_loc_id: ipLocation.id,
-                device_id: userDevice.id,
+                ip_locId: ipLocation.id,
+                deviceId: userDevice.id,
                 // requests with less than 1 hours gap are considered as the same connection
                 updatedAt: { gt: new Date(Date.now() - 1000 * 60 * 60 * 1) }
             },

@@ -7,7 +7,7 @@ import { ErrLog, Log, ResLog } from '../tools/log';
 import { prisma } from '../app';
 
 const refreshInfos = (user: User) => ({ type: properties.token.type.user, id: user.id });
-const accessInfos = (user: User) => ({ type: properties.token.type.user, id: user.id, role: user.role_id });
+const accessInfos = (user: User) => ({ type: properties.token.type.user, id: user.id, role: user.roleId });
 const SECRET_KEY = process.env.JWT_SECRET ?? 'secret';
 
 export function createAccessToken (user: User) {

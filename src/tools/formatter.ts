@@ -21,7 +21,7 @@ export function PrivateApp (app: App): any {
     const obj: any = Object.assign({}, app);
     if (obj.author !== undefined) {
         obj.author = PrivateUser(obj.author);
-        delete obj.author_id;
+        delete obj.authorId;
     }
     return obj;
 }
@@ -30,6 +30,18 @@ export function PublicApp (app: App): any {
     const obj: any = Object.assign({}, app);
     obj.author = PublicUser(obj.author);
     delete obj.key;
-    delete obj.author_id;
+    delete obj.authorId;
+    return obj;
+}
+
+export function PublicProduct (product: any): any {
+    const obj: any = Object.assign({}, product);
+    delete obj.appId;
+    return obj;
+}
+
+export function PublicCart (cart: any): any {
+    const obj: any = Object.assign({}, cart);
+    delete obj.userId;
     return obj;
 }

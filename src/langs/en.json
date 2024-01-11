@@ -134,6 +134,20 @@
                 "deleted": "App deleted successfully"
             },
 
+            "product": {
+                "created": "Product created successfully",
+                "fetched": "Product fetched successfully",
+                "updated": "Product updated successfully",
+                "deleted": "Product deleted successfully"
+            },
+
+            "cart": {
+                "created": "Cart created successfully",
+                "fetched": "Cart fetched successfully",
+                "updated": "Cart updated successfully",
+                "deleted": "Cart deleted successfullys"
+            },
+
             "portal": {
                 "generated": "Portal token generated successfully",
                 "connected": "Portal user connected successfully"

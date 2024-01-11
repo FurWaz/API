@@ -11,6 +11,8 @@ const settings: any = { errorFormat: 'pretty' };
 const prisma = new PrismaClient(settings);
 
 const app = express();
+app.use(express.raw({ type: 'application/json' }));
+app.use((req, res, next) => { (req as any).rawBody = req.body; next(); });
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -38,6 +40,7 @@ app.use('/auth', translation, require('./routes/auth'));
 app.use('/apps', translation, require('./routes/apps'));
 app.use('/users', translation, dbNeeded, logConnection, require('./routes/users'));
 app.use('/portal', translation, dbNeeded, logConnection, require('./routes/portal'));
+app.use('/store', translation, require('./routes/store'));
 
 app.use(translation, (req, res) => {
     new ErrLog(res.locals.lang.error.generic.routeNotFound, Log.CODE.NOT_FOUND).sendTo(res);

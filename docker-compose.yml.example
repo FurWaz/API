@@ -29,6 +29,8 @@ services:
     environment:
       DATABASE_URL: "mysql://root:<change_password>@db:3306/furwaz"
       JWT_SECRET: '<change_secret>'
+      STRIPE_KEY: '<change_key>'
+      STRIPE_WEBHOOK_SECRET: '<change_secret>'
       NODE_ENV: 'production'
       WEBSITE_URL: 'https://furwaz.fr'
       WEBSITE_NAME: 'FurWaz'
