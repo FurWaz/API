@@ -4,5 +4,6 @@ npm run docs
 npm run build
 cp -r /app/src/openapi.json /app/dist/openapi.json
 cp -r /app/src/langs /app/dist/langs
+cp -r /app/src/mails /app/dist/mails
 cd /app/dist
 node index.js
