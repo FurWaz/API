@@ -1,193 +1,96 @@
-import type express from 'express';
-import { prisma } from '../app';
-import * as validator from '../tools/validator';
-import * as sanitizer from '../tools/sanitizer';
-import { Log, ErrLog, ResLog } from '../tools/log';
-import { type App } from '@prisma/client';
-import jwt from 'jsonwebtoken';
-import properties from '../properties.json';
-import { PrivateApp, PublicApp } from '../tools/formatter';
-import { getPaginationParameters, createPaginationResult } from '../tools/pagination';
-const SECRET_KEY = process.env.JWT_SECRET ?? 'secret';
+import HTTPError from "errors/HTTPError.ts";
+import { prisma } from "index.ts";
+import { App, PrivateApp, PublicApp } from "models/App.ts";
+import HTTP from "tools/HTTP.ts";
+import Lang from "tools/Lang.ts";
+import { PaginationInfos, getPrismaPagination } from "tools/Pagination.ts";
 
-function createAppKey (app: App): string {
-    const token = jwt.sign(
-        { type: properties.token.type.app, id: app.id },
-        SECRET_KEY
-    );
-    return token;
+export async function getAllApps(pagination: PaginationInfos): Promise<PublicApp[]> {
+    const apps = await prisma.app.findMany({
+        ...getPrismaPagination(pagination)
+    });
+    return apps.map(app => App.makePublicApp(app));
 }
 
-export function create (req: express.Request, res: express.Response) {
-    const { name, description } = req.body;
+export async function createApp(userId: number, name: string, description: string): Promise<PrivateApp> {
+    const app = await prisma.app.findFirst({ where: { name } });
+    
+    // If user already exists, throw an error
+    if (app !== null) {
+        throw new HTTPError(
+            HTTP.CONFLICT,
+            Lang.GetText(Lang.CreateTranslationContext(
+                'errors',
+                'AlreadyExists',
+                { resource: Lang.GetText(Lang.CreateTranslationContext('models', 'App')) }
+            ))
+        );
+    }
 
-    if (!validator.checkNameField(name, req, res)) return;
-    if (!validator.checkStringField(description, req, res)) return;
-
-    prisma.app.count({
-        where: {
-            authorId: res.locals.user.id
-        }
-    }).then((count) => {
-        if (count >= properties.apps.maxPerUser) {
-            new ErrLog(res.locals.lang.error.app.maxPerUser, Log.CODE.ENHANCE_YOUR_CALM).sendTo(res);
-            return;
-        }
-
-        prisma.app.create({
-            data: {
-                name,
-                description,
-                authorId: res.locals.user.id,
-                key: ''
-            }
-        }).then((app: App) => {
-            app.key = createAppKey(app);
-            prisma.app.update({
-                where: { id: app.id },
-                data: { key: app.key }
-            }).then(() => {
-                new ResLog(res.locals.lang.info.app.created, { app }).sendTo(res);
-            }).catch((err) => {
-                console.error(err);
-                new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-            });
-        }).catch((err) => {
-            console.error(err);
-            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-        });
-    }).catch((err) => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-    });
-};
-
-export function get (req: express.Request, res: express.Response) {
-    const id = sanitizer.sanitizeIdField(req.params.id, req, res);
-    if (id === null) return;
-
-    prisma.app.findUnique({ where: { id }, include: { author: true } }).then(app => {
-        if (app === null) {
-            new ErrLog(res.locals.lang.error.app.notFound, Log.CODE.NOT_FOUND).sendTo(res);
-            return;
-        }
-
-        new ResLog(res.locals.lang.info.app.fetched, { app: PublicApp(app) }).sendTo(res);
-    }).catch((err) => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-    });
+    const newApp = await App.create(userId, name, description);
+    return newApp;
 }
 
-export function getmy (req: express.Request, res: express.Response) {
-    console.log('getmy => ', req.query)
-    const paginationParameters = getPaginationParameters(req, res);
+export async function updateApp(userId: number, id: number, infos: any) {
+    const app = await App.getAsPrivate(id);
+    if (app === null)
+        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
 
-    prisma.app.count({
-        where: { authorId: res.locals.user.id }
-    }).then((total) => {
-        prisma.app.findMany({
-            where: { authorId: res.locals.user.id },
-            include: { author: true },
-            skip: paginationParameters.offset * paginationParameters.limit,
-            take: paginationParameters.limit
-        }).then((apps: App[]) => {
-            paginationParameters.total = total;
-            new ResLog(res.locals.lang.info.app.fetched, createPaginationResult(apps.map(app => PrivateApp(app)), paginationParameters)).sendTo(res);
-        }).catch(err => {
-            console.error(err);
-            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-        });
-    }).catch(err => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+    if (app.authorId !== userId)
+        throw HTTPError.Unauthorized();
+
+    if (infos.name === undefined && infos.description === undefined)
+        return app;
+
+    const newApp = await prisma.app.update({
+        where: { id },
+        data: {
+            name: infos.name ?? app.name,
+            description: infos.description ?? app.description
+        }
     });
+    return App.makePrivateApp(newApp);
 }
 
-export function getall (req: express.Request, res: express.Response) {
-    const paginationParameters = getPaginationParameters(req, res);
+export async function deleteApp(userId: number, id: number) {
+    const app = await App.getAsPrivate(id);
+    if (app === null)
+        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
 
-    prisma.app.count().then((total) => {
-        prisma.app.findMany({
-            include: { author: true },
-            skip: paginationParameters.offset,
-            take: paginationParameters.limit
-        }).then((apps: App[]) => {
-            paginationParameters.total = total;
-            new ResLog(res.locals.lang.info.app.fetched, createPaginationResult(apps.map(app => PublicApp(app)), paginationParameters)).sendTo(res);
-        }).catch(err => {
-            console.error(err);
-            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-        });
-    }).catch(err => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-    });
+    if (app.authorId !== userId)
+        throw HTTPError.Unauthorized();
+
+    await prisma.app.delete({ where: { id } });
 }
 
-export function update (req: express.Request, res: express.Response) {
-    const { name, description } = req.body;
-    const id = sanitizer.sanitizeIdField(req.params.id, req, res);
-    if (id === null) return;
-
-    if (name !== undefined && !validator.checkStringField(name, req, res)) return;
-    if (description !== undefined && !validator.checkStringField(description, req, res)) return;
-
-    prisma.app.findMany({ where: { id } }).then((apps: App[]) => {
-        if (apps.length === 0) {
-            new ErrLog(res.locals.lang.error.app.notFound, Log.CODE.NOT_FOUND).sendTo(res);
-            return;
-        }
-
-        const app = apps[0];
-        if (app.authorId !== res.locals.user.id && res.locals.user.role !== properties.role.admin) {
-            new ErrLog(res.locals.lang.error.app.notYours, Log.CODE.FORBIDDEN).sendTo(res);
-            return;
-        }
-
-        prisma.app.update({
-            where: { id },
-            data: {
-                name,
-                description,
-                verified: (name !== undefined) ? false : undefined
-            }
-        }).then((app: App) => {
-            new ResLog(res.locals.lang.info.app.updated, { app }).sendTo(res);
-        }).catch((err) => {
-            console.error(err);
-            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-        });
-    }).catch((err) => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-    });
+export async function getPublicApp(id: number): Promise<PublicApp> {
+    const user = await App.getAsPublic(id);
+    if (user === null)
+        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
+    return user;
 }
 
-export function remove (req: express.Request, res: express.Response) {
-    const id = sanitizer.sanitizeIdField(req.params.id, req, res);
-    if (id === null) return;
+export async function getPrivateApp(id: number): Promise<PrivateApp> {
+    const user = await App.getAsPrivate(id);
+    if (user === null)
+        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
+    return user;
+}
 
-    prisma.app.findMany({ where: { id } }).then((apps: App[]) => {
-        if (apps.length === 0) {
-            new ErrLog(res.locals.lang.error.app.notFound, Log.CODE.NOT_FOUND).sendTo(res);
-            return;
-        }
+export async function getAppAsUser(userId: number, appId: number): Promise<PublicApp> {
+    const app = await App.getAsPrivate(appId);
+    if (app === null)
+        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
 
-        const app = apps[0];
-        if (app.authorId !== res.locals.user.id && res.locals.user.role !== properties.role.admin) {
-            new ErrLog(res.locals.lang.error.app.notYours, Log.CODE.FORBIDDEN).sendTo(res);
-            return;
-        }
+    if (app.authorId !== userId)
+        return App.makePublicApp(app);
+    return App.makePrivateApp(app);
+}
 
-        prisma.app.delete({ where: { id } }).then(() => {
-            new ResLog(res.locals.lang.info.app.deleted).sendTo(res);
-        }).catch((err) => {
-            console.error(err);
-            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-        });
-    }).catch((err) => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+export async function getOwnApps(userId: number, pagination: PaginationInfos): Promise<PublicApp[]> {
+    const apps = await prisma.app.findMany({
+        where: { authorId: userId },
+        ...getPrismaPagination(pagination)
     });
+    return apps.map(app => App.makePrivateApp(app));
 }

@@ -1,0 +1,15 @@
+{
+    "Created":  "${resource} created successfully",
+    "Updated":  "${resource} updated successfully",
+    "Deleted":  "${resource} deleted successfully",
+    "Fetched":  "${resource} feched successfully",
+    "NotFound": "${resource} not found",
+    "UserEmailVerified": "User email verified successfully",
+    "LoggedIn": "Logged in successfully",
+    "TokenRefreshed": "Token refreshed successfully",
+    "PortalTokenGenerated": "Portal token generated successfully",
+    "PortalUserRetrieved": "Portal user retrieved successfully",
+    "PortalAppRetrieved": "Portal app retrieved successfully",
+    "TokenVerified": "Token verified successfully",
+    "PortalUserConnected": "Connected through portal successfully"
+}

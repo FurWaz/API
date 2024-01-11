@@ -1,83 +1,48 @@
-import nodemailer from 'nodemailer';
-import mailConfig from '../../mail.config.json';
-import fs from 'fs';
+import * as nodemailer from "nodemailer";
+import Config from "./Config.ts";
+import Mail from "./Mail.ts";
 
-export class MailerError extends Error {
-    constructor (message: string) {
-        super(message);
-        this.name = 'MailerError';
+export default class Mailer {
+    private static transporter: nodemailer.Transporter;
+
+    /**
+     * Send a mail to a client using the mailer transporter
+     * @param to Client email address (ex: mail@furwaz.fr)
+     * @param mail The mail object to send
+     */
+    public static sendMail(to: string, mail: Mail) {
+        console.debug('Sending mail to ' + to + ' : [' + mail.subject + ']');
+        this.getTransporter().then(transporter => {
+            transporter.sendMail({
+                from: Config.mail.from,
+                to,
+                subject: mail.subject,
+                html: mail.html,
+                text: mail.text
+            });
+        });
+    }
+
+    /**
+     * Creates a mailer transporter or returns an existing one
+     * @returns The mailer transporter
+     */
+    public static async getTransporter(): Promise<nodemailer.Transporter> {
+        return new Promise((resolve) => {
+            if (this.transporter) {
+                resolve(this.transporter);
+                return;
+            }
+            this.transporter = nodemailer.createTransport({
+                host: Config.mail.host,
+                port: Config.mail.port,
+                secure: Config.mail.secure,
+                auth: {
+                    user: Config.mail.user,
+                    pass: Config.mail.password
+                }
+            });
+            resolve(this.transporter);
+        });
     }
 }
-
-interface MailInfos {
-    to: string
-    subject: string
-    text: string
-    html: string
-}
-
-let transporter: nodemailer.Transporter | undefined;
-
-async function initMailer () {
-    const enabled: boolean = mailConfig.enabled;
-    if (!enabled) return;
-
-    if (process.env.NODE_ENV === 'production') {
-        console.warn('Mailer in production mode. Emails will be sent to real recipients.');
-    } else {
-        console.info('Mailer in dev mode, emails will be sent to', mailConfig.devMode.overrideTo);
-    }
-
-    let privKey: string;
-    try {
-        privKey = fs.readFileSync(mailConfig.settings.dkim.privKeyPath, 'utf8');
-    } catch (err) {
-        console.error('Mailer disabled due to error:\n', err);
-        return;
-    }
-
-    transporter = nodemailer.createTransport({
-        service: 'postfix',
-        host: mailConfig.settings.host,
-        secure: mailConfig.settings.secure,
-        port: mailConfig.settings.port,
-        tls: { rejectUnauthorized: false, ciphers: 'SSLv3' },
-        dkim: {
-            domainName: mailConfig.settings.dkim.domainName,
-            keySelector: mailConfig.settings.dkim.selector,
-            privateKey: privKey
-        }
-    });
-
-    try {
-        await transporter.verify();
-        console.log('Mailer ready');
-    } catch (err) {
-        console.error('Mailer disabled due to error:\n', err);
-        transporter = undefined;
-    }
-}
-
-async function sendMail ({ to, subject, text, html }: MailInfos) {
-    if (transporter === undefined) {
-        throw new MailerError(`Mailer disabled. Cannot send email '${subject}' to '${to}'.`);
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        console.log('Mailer in dev mode, email sent to ', mailConfig.devMode.overrideTo);
-        subject = '[DEV] ' + subject + ' (original recipient: ' + to + ')';
-        to = mailConfig.devMode.overrideTo;
-    }
-
-    const info = await transporter.sendMail({
-        from: mailConfig.settings.email, // sender address
-        to, // list of receivers
-        subject, // Subject line
-        text, // plain text body
-        html // html body
-    });
-
-    console.log('Message sent:', { to, subject }, { messageId: info.messageId });
-}
-
-export { initMailer, sendMail }

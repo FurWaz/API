@@ -1,51 +1,38 @@
 version: '3.1'
 
+name: furwaz-api
 services:
-  # MariaDB setup
   db:
     image: mariadb
-    restart: always
+    restart: unless-stopped
     command: [
       '--lower-case-table-names=1'
     ]
     ports:
       - "3306:3306"
-    networks:
-      - api_network
-    volumes:
-      - ./db/data:/var/lib/mysql
     environment:
       MARIADB_DATABASE: furwaz
-      MARIADB_ROOT_PASSWORD: <change_password>
+      MARIADB_ROOT_PASSWORD: root
+    networks:
+      - api-network
+
+  redis:
+    image: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - api-network
 
   # Node api setup
   node:
     build: .
-    restart: always
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - 8080:8080
     networks:
-      - api_network
-    environment:
-      DATABASE_URL: "mysql://root:<change_password>@db:3306/furwaz"
-      JWT_SECRET: '<change_secret>'
-      STRIPE_KEY: '<change_key>'
-      STRIPE_WEBHOOK_SECRET: '<change_secret>'
-      NODE_ENV: 'production'
-      WEBSITE_URL: 'https://furwaz.fr'
-      WEBSITE_NAME: 'FurWaz'
-      FAVICON_URL: 'https://furwaz.fr/assets/icon.svg'
+      - api-network
 
-  # Added adminer (light phpmyadmin), to be able to view the database
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8008:8080"
-    networks:
-      - api_network
-
-# Common network for all services
 networks:
-  api_network:
+  api-network:
     driver: bridge

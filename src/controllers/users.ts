@@ -1,177 +1,146 @@
-import type express from 'express';
-import { prisma } from '../app';
-import * as validator from '../tools/validator';
-import { Log, ErrLog, ResLog } from '../tools/log';
-import { type User } from '@prisma/client';
-import { createTokens, hashPassword, verifyPassword } from './auth';
-import * as Formatter from '../tools/formatter';
-import properties from '../properties.json';
-import { sanitizeIdField } from '../tools/sanitizer';
+import HTTP from 'tools/HTTP.ts';
+import { prisma } from '../index.ts';
+import Lang from 'tools/Lang.ts';
+import HTTPError from 'errors/HTTPError.ts';
+import { PrivateUser, PublicUser, User } from 'models/User.ts';
+import Mailer from 'tools/Mailer.ts';
+import Mail from 'tools/Mail.ts';
+import Formatter from 'tools/Formatter.ts';
+import { getRootDir } from 'tools/Dirs.ts';
+import Config from 'tools/Config.ts';
+import { rmUnverifiedUser } from 'tools/Tasks.ts';
+import { Timer } from 'tools/Timer.ts';
+import { TokenUtils } from 'tools/Token.ts';
+import Password from 'tools/Password.ts';
 
-export async function _login (email: string, password: string, req: express.Request, res: express.Response): Promise<object> {
-    return new Promise((resolve, reject) => {
-        prisma.user.findUnique({ where: { email } }).then((user: User | null) => {
-            if (user === null) {
-                new ErrLog(res.locals.lang.error.user.notFound, Log.CODE.NOT_FOUND).sendTo(res);
-                return;
+type EmailVerificationTokenPayload = { type: 'emailVerify'; id: number; };
+async function createEmailVerifyToken(userId: number) {
+    return TokenUtils.encodePayload({
+        type: 'emailVerify',
+        id: userId
+    }, '24h');
+}
+
+export async function verifyUserEmail(token: string): Promise<boolean> {
+    const payload = await TokenUtils.decodePayload(token) as EmailVerificationTokenPayload;
+    if (payload === null || payload.type !== 'emailVerify')
+        throw new HTTPError(HTTP.INVALID_TOKEN, Lang.GetText(Lang.CreateTranslationContext('errors', 'InvalidToken')));
+
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (user === null)
+        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+    if (user.lastEmailVerif !== null)
+        throw new HTTPError(HTTP.EXPIRED_TOKEN, Lang.GetText(Lang.CreateTranslationContext('errors', 'EmailAlreadyVerified')));
+
+    await prisma.user.update({ where: { id: payload.id }, data: { lastEmailVerif: new Date() } });
+    return true;
+}
+
+/**
+ * Creates a new user and returns it if successful, throws an error otherwise
+ * @param pseudo The user pseudo
+ * @param email The user email address (must be unique)
+ * @param password The user plain password
+ * @returns The created user (as a PrivateUser)
+ */
+export async function createUser(pseudo: string, email: string, password: string): Promise<PrivateUser> {
+    const user = await prisma.user.findFirst({ where: { OR: [{ pseudo }, { email }] } });
+    
+    // If user already exists, throw an error
+    if (user !== null) {
+        throw new HTTPError(
+            HTTP.CONFLICT,
+            Lang.GetText(Lang.CreateTranslationContext(
+                'errors',
+                'AlreadyExists',
+                { resource: Lang.GetText(Lang.CreateTranslationContext('models', 'User')) }
+            ))
+        );
+    }
+
+    // Generate password hash and create user
+    const newUser = await User.create(pseudo, email, password);
+
+    // send mail to verify user email
+    const emailVerifyToken = await createEmailVerifyToken(newUser.id);
+    Mailer.sendMail(
+        newUser.email,
+        Mail.fromFile(
+            Formatter.formatString('${Lang::mailVerifyEmail/subject}'),
+            getRootDir() + 'mails/verifyEmail.html',
+            {
+                webhost: Config.webHost,
+                verifyLink: `${Config.webHost}/verify/email?token=${emailVerifyToken}`,
+                mailto: Config.mailContact
             }
+        )
+    );
 
-            verifyPassword(password, user.password).then(result => {
-                if (!result) {
-                    reject(new ErrLog(res.locals.lang.error.user.wrongPassword, Log.CODE.FORBIDDEN));
-                    return;
-                }
+    // register task to delete user in 24 hour if not email-verified
+    Timer.addTask(rmUnverifiedUser.createTask(newUser.id));
 
-                resolve(user);
-            }).catch(err => {
-                console.error(err);
-                reject(new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR));
-            });
-        }).catch((err) => {
-            console.error(err);
-            reject(new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR));
-        });
-    });
+    return newUser;
 }
 
-export function userfromId (id: number, req: express.Request, res: express.Response, callback: (user: User) => void) {
-    prisma.user.findUnique({ where: { id } }).then((user: User | null) => {
-        if (user === null) {
-            new ErrLog(res.locals.lang.error.user.notFound, Log.CODE.NOT_FOUND).sendTo(res);
-            return;
-        }
+export async function setUserInfos(id: number, infos: any) {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (user === null)
+        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
 
-        callback(user);
-    }).catch((err) => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-    });
-}
-
-export function create (req: express.Request, res: express.Response) {
-    const { pseudo, email, password } = req.body;
-
-    if (!validator.checkPseudoField(pseudo, req, res)) return;
-    if (!validator.checkEmailField(email, req, res)) return;
-    if (!validator.checkPasswordField(password, req, res)) return;
-
-    prisma.user.count({ where: { email } }).then((count: number) => {
-        if (count > 0) {
-            new ErrLog(res.locals.lang.error.user.alreadyExists, Log.CODE.CONFLICT).sendTo(res);
-            return;
-        }
-
-        hashPassword(password).then((hash) => {
-            prisma.user.create({ data: { pseudo, email, password: hash, roleId: 1 } }).then((user: User) => {
-                const tokens = createTokens(user);
-                new ResLog(res.locals.lang.info.user.registered, { user: Formatter.PrivateUser(user), tokens }, Log.CODE.CREATED).sendTo(res);
-            }).catch((err) => {
-                console.error(err);
-                new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-            });
-        }).catch((err) => {
-            console.error(err);
-            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-        });
-    }).catch((err) => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-    });
-};
-
-export function update (req: express.Request, res: express.Response) {
-    const id = req.params.id;
-    if (!validator.checkIdField(id, req, res)) return;
-
-    if (res.locals.user.id !== id && res.locals.user.role < properties.role.admin) {
-        new ErrLog(res.locals.lang.error.generic.notEnoughPerms, Log.CODE.UNAUTHORIZED).sendTo(res);
-        return;
+    if (infos.password !== undefined) {
+        if (infos.oldPassword === undefined)
+            throw new HTTPError(HTTP.BAD_REQUEST, Lang.GetText(Lang.CreateTranslationContext('errors', 'MissingOldPassword')));
+        if (!await Password.compare(infos.oldPassword, user.password))
+            throw new HTTPError(HTTP.UNAUTHORIZED, Lang.GetText(Lang.CreateTranslationContext('errors', 'InvalidOldPassword')));
+        infos.password = await Password.hash(infos.password);
     }
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { pseudo, email, send_email } = req.body;
-    if (pseudo !== undefined && !validator.checkPseudoField(pseudo, req, res)) return;
-    if (email !== undefined && !validator.checkPseudoField(email, req, res)) return;
-    if (send_email !== undefined && !validator.checkBooleanField(send_email, req, res)) return;
+    if (infos.pseudo === undefined && infos.email === undefined && infos.password === undefined)
+        return user;
 
-    const infos = { pseudo, email, send_email };
-
-    if (Object.keys(infos).length === 0) {
-        new ErrLog(res.locals.lang.error.generic.noUpdateInfos).sendTo(res);
-        return;
-    }
-
-    prisma.user.update({
-        where: { id: res.locals.user.id },
-        data: infos
-    }).then(user => {
-        new ResLog(res.locals.lang.info.user.updated, { user }).sendTo(res);
-    }).catch(err => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-    });
-}
-
-export function get (req: express.Request, res: express.Response) {
-    const id = sanitizeIdField(req.params.id, req, res);
-    if (id === null) return;
-
-    if (res.locals.user.id !== id && res.locals.user.role < properties.role.admin) {
-        new ErrLog(res.locals.lang.error.generic.notEnoughPerms, Log.CODE.UNAUTHORIZED).sendTo(res);
-        return;
-    }
-
-    prisma.user.findUnique({ where: { id } }).then((user: User | null) => {
-        if (user === null) {
-            new ErrLog(res.locals.lang.error.user.notFound, Log.CODE.NOT_FOUND).sendTo(res);
-            return;
+    const newUser = await prisma.user.update({ where: { id }, data: {
+            pseudo: infos.pseudo,
+            email: infos.email,
+            password: infos.password
         }
-
-        new ResLog(res.locals.lang.info.user.fetched, { user: Formatter.PrivateUser(user) }, Log.CODE.OK).sendTo(res);
-    }).catch(err => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
     });
+    return User.makePrivateUser(newUser);
 }
 
-export function remove (req: express.Request, res: express.Response) {
-    const id = sanitizeIdField(req.params.id, req, res);
-    if (id === null) return;
+export async function deleteUser(id: number, password: string) {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (user === null)
+        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
 
-    if (res.locals.user.id !== id && res.locals.user.role < properties.role.admin) {
-        new ErrLog(res.locals.lang.error.generic.notEnoughPerms, Log.CODE.UNAUTHORIZED).sendTo(res);
-        return;
-    }
+    if (!await Password.compare(password, user.password))
+        throw HTTPError.InvalidPassword();
 
-    prisma.user.findUnique({ where: { id } }).then((user: User | null) => {
-        if (user === null) {
-            new ErrLog(res.locals.lang.error.user.notFound, Log.CODE.NOT_FOUND).sendTo(res);
-            return;
-        }
+    await prisma.user.delete({ where: { id } });
+}
 
-        prisma.user.delete({ where: { id } }).then(() => {
-            new ResLog(res.locals.lang.info.user.deleted, { user }).sendTo(res);
-        }).catch(err => {
-            console.error(err);
-            new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
-        });
-    }).catch(err => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
+export async function getPublicUser(id: number): Promise<PublicUser> {
+    const user = await User.getAsPublic(id);
+    if (user === null)
+        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+    return user;
+}
+
+export async function getPrivateUser(id: number): Promise<PrivateUser> {
+    const user = await User.getAsPrivate(id);
+    if (user === null)
+        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+    return user;
+}
+
+export async function setUserProfile(id: number, infos: any) {
+    const newUserProfile = await prisma.userProfile.upsert({
+        where: { userId: id },
+        create: { userId: id, ...infos },
+        update: infos
     });
+    return newUserProfile;
 }
 
-export function getMe (req: express.Request, res: express.Response) {
-    req.params.id = res.locals.user.id;
-    get(req, res);
-}
-
-export function updateMe (req: express.Request, res: express.Response) {
-    req.params.id = res.locals.user.id;
-    update(req, res);
-}
-
-export function removeMe (req: express.Request, res: express.Response) {
-    req.params.id = res.locals.user.id;
-    remove(req, res);
+export async function deleteUserProfile(id: number) {
+    await prisma.userProfile.delete({ where: { userId: id } });
 }

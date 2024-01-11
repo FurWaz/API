@@ -1,0 +1,10 @@
+{
+    "subject": "Account Verification",
+    "body1": "Thank you for signing up on <a href=\"https://${webhost}\" style=\"color: #f97316\">${webhost}</a>!",
+    "body2": "As a security measure, we kindly ask you to confirm your email address to validate its authenticity.",
+    "body3": "To do so, please click the button below:",
+    "button": "Confirm my email address",
+    "body4": "Or copy and paste the following link into your browser: <a href=\"${verifyLink}\" style=\"color: #f97316\">${verifyLink}</>.",
+    "footer1": "If you did not initiate this request, please ignore this email. The account will be deleted within 24 hours.",
+    "footer2": "If you have any questions, feel free to contact us at <a href=\"mailto:${mailto}\" style=\"color: #f97316\">${mailto}</a>."
+}

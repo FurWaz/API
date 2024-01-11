@@ -1,6 +1,7 @@
 FROM node:lts-alpine
 WORKDIR /app
+COPY package*.json ./
+RUN npm install
 COPY . .
 EXPOSE 8080
-RUN chmod +x ./docker-start.sh
-ENTRYPOINT [ "/app/docker-start.sh" ]
+CMD ["./start-docker.sh"]

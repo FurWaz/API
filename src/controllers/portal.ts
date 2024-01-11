@@ -1,166 +1,114 @@
-import type express from 'express';
-import * as sanitizer from '../tools/sanitizer';
-import { Log, ErrLog, ResLog } from '../tools/log';
-import { type User } from '@prisma/client';
-import properties from '../properties.json';
 import { randomBytes } from 'crypto';
-import { prisma } from '../app';
-import { PublicUser } from '../tools/formatter';
+import HTTPError from 'errors/HTTPError.ts';
+import type { Response } from 'express';
+import { App } from 'models/App.ts';
+import { User } from 'models/User.ts';
+import { respond } from 'tools/Responses.ts';
+import { delayFromNow } from 'tools/Tasks.ts';
 
-class PortalToken {
-    token: string;
+interface portalInfos {
     appId: number;
-    response: express.Response | null;
-    user: User | null;
-    creation: number;
+    userId?: number;
+    expiration: Date;
+    response?: Response;
+    timeout?: NodeJS.Timeout;
+}
+const portalTokens: { [token: string]: portalInfos } = {};
 
-    constructor (token: string, appId: number) {
-        this.token = token;
-        this.appId = appId;
-        this.response = null;
-        this.user = null;
-        this.creation = Date.now();
-    }
-
-    setUser (user: User) {
-        this.user = user;
-        this.tryToRespond();
-    }
-
-    setResponse (response: express.Response) {
-        this.response = response;
-        this.tryToRespond();
-    }
-
-    isExpired (): boolean {
-        return Date.now() > this.creation + Number(properties.portal.tokenExpiration);
-    }
-
-    tryToRespond () {
-        if (this.response === null || this.user === null) return;
-        new ResLog(this.response.locals.lang.info.portal.connected, { user: this.user }).sendTo(this.response);
-        portalTokens.splice(portalTokens.indexOf(this), 1);
-    }
+function deletePortal(token: string) {
+    const infos = portalTokens[token];
+    if (infos === undefined) return;
+    if (infos.timeout !== undefined) clearTimeout(infos.timeout);
+    delete portalTokens[token];
 }
 
-const portalTokens: PortalToken[] = [];
+async function resolvePortal(token: string, res?: Response) {
+    const infos = portalTokens[token];
+    if (infos === undefined) return;
 
-export function generate (req: express.Request, res: express.Response) {
-    if (res.locals.app === undefined) {
-        new ErrLog(res.locals.lang.error.auth.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    for (let i = 0; i < portalTokens.length; i++) {
-        if (portalTokens[i].isExpired()) {
-            portalTokens.splice(i, 1);
-            i--;
+    if (res !== undefined && infos.response === undefined) {
+        infos.response = res;
+        if (infos.userId === undefined) {
+            // Resolve the request after 10 seconds if no user is connected
+            setTimeout(() => {
+                const newInfos = portalTokens[token];
+                if (newInfos === undefined) return;
+                if (newInfos.userId === undefined) {
+                    newInfos.response = undefined;
+                    res.status(204).end();
+                }
+            }, 10 * 1000);
         }
     }
+    if (infos.userId === undefined || infos.response === undefined) return;
 
-    const token = randomBytes(32).toString('hex');
-    const portalToken = new PortalToken(token, res.locals.app.id);
-    portalTokens.push(portalToken);
-
-    new ResLog(res.locals.lang.info.portal.generated, { token }).sendTo(res);
+    const user = await User.getAsPublic(infos.userId);
+    if (user === null)
+        throw new HTTPError(
+            User.MESSAGES.NOT_FOUND.status,
+            User.MESSAGES.NOT_FOUND.message
+        );
+    
+    deletePortal(token);
+    respond(infos.response, User.MESSAGES.FETCHED, user);
 }
 
-export function retreiveUser (req: express.Request, res: express.Response) {
-    const token = sanitizer.sanitizeStringField(req.query.token, req, res);
-    if (token === null) return;
-
-    const app = res.locals.app;
-    if (app === undefined) {
-        new ErrLog(res.locals.lang.error.auth.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    const portalToken = portalTokens.find((portalToken) => portalToken.token === token);
-    if (portalToken === undefined) {
-        new ErrLog(res.locals.lang.error.portal.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    if (portalToken.isExpired()) {
-        new ErrLog(res.locals.lang.error.portal.expiredToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    if (portalToken.appId !== app.id) {
-        new ErrLog(res.locals.lang.error.portal.forbidden, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    if (portalToken.response !== null) {
-        new ErrLog(res.locals.lang.error.portal.alreadyUsed, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    portalToken.setResponse(res);
+export async function generatePortalToken(appId: number) {
+    const code = (await randomBytes(32)).toString('hex');
+    portalTokens[code] = {
+        appId,
+        expiration: delayFromNow(5, 'm'),
+        timeout: setTimeout(() => {
+            if (portalTokens[code] !== undefined)
+                delete portalTokens[code];
+        }, 5 * 60 * 1000)
+    };
+    return code;
 }
 
-export function retreiveApp (req: express.Request, res: express.Response) {
-    const token = sanitizer.sanitizeStringField(req.query.token, req, res);
-    if (token === null) return;
+export async function getPortalUser(res: Response, token: string, appId: number) {
+    const infos = portalTokens[token];
+    if (infos === undefined) throw HTTPError.TokenExpired();
+    if (infos.appId !== appId) throw HTTPError.Unauthorized();
 
-    const portalToken = portalTokens.find((portalToken) => portalToken.token === token);
-    if (portalToken === undefined) {
-        new ErrLog(res.locals.lang.error.portal.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
+    if (infos.expiration < new Date()) {
+        deletePortal(token);
+        throw HTTPError.TokenExpired();
     }
 
-    if (portalToken.isExpired()) {
-        new ErrLog(res.locals.lang.error.portal.expiredToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    prisma.app.findUnique({ where: { id: portalToken.appId }, include: { author: true } }).then(app => {
-        if (app === null) {
-            new ErrLog(res.locals.lang.error.app.notFound, Log.CODE.FORBIDDEN).sendTo(res);
-            return;
-        }
-
-        new ResLog(res.locals.lang.info.app.retreived, { app }).sendTo(res);
-    }).catch(err => {
-        console.error(err);
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR, err).sendTo(res);
-    });
+    await resolvePortal(token, res);
 }
 
-export function connect (req: express.Request, res: express.Response) {
-    if (res.locals.user === undefined) {
-        new ErrLog(res.locals.lang.error.auth.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
+export async function getPortalApp(token: string) {
+    const infos = portalTokens[token];
+    if (infos === undefined)
+        throw HTTPError.TokenExpired();
+
+    if (infos.expiration < new Date()) {
+        deletePortal(token);
+        throw HTTPError.TokenExpired();
     }
 
-    const token = sanitizer.sanitizeStringField(req.params.token, req, res);
-    if (token === null) return;
+    const app = await App.getAsPublic(infos.appId);
+    if (app === null)
+        throw new HTTPError(
+            App.MESSAGES.NOT_FOUND.status,
+            App.MESSAGES.NOT_FOUND.message
+        );
+    
+    return app;
+}
 
-    const portalToken = portalTokens.find((portalToken) => portalToken.token === token);
-    if (portalToken === undefined) {
-        new ErrLog(res.locals.lang.error.portal.invalidToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
+export async function connectPortalUser(token: string, userId: number) {
+    const infos = portalTokens[token];
+    if (infos === undefined)
+        throw HTTPError.TokenExpired();
+
+    if (infos.expiration < new Date()) {
+        deletePortal(token);
+        throw HTTPError.TokenExpired();
     }
 
-    if (portalToken.isExpired()) {
-        new ErrLog(res.locals.lang.error.portal.expiredToken, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    if (portalToken.user !== null) {
-        new ErrLog(res.locals.lang.error.portal.alreadyUsed, Log.CODE.FORBIDDEN).sendTo(res);
-        return;
-    }
-
-    prisma.user.findUnique({ where: { id: res.locals.user.id } }).then((user) => {
-        if (user === null) {
-            new ErrLog(res.locals.lang.error.user.notFound, Log.CODE.FORBIDDEN).sendTo(res);
-            return;
-        }
-
-        portalToken.setUser(PublicUser(user));
-        new ResLog(res.locals.lang.info.portal.connected).sendTo(res);
-    }).catch(err => {
-        new ErrLog(res.locals.lang.error.generic.internalError, Log.CODE.INTERNAL_SERVER_ERROR, err).sendTo(res);
-    });
+    infos.userId = userId;
+    await resolvePortal(token);
 }

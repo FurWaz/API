@@ -1,0 +1,143 @@
+{
+    "description": "FurWaz API JSON config schema",
+    "type": "object",
+    "properties": {
+        "mode": {
+            "type": "string",
+            "enum": [
+                "development",
+                "production"
+            ],
+            "default": "development",
+            "description": "The mode the API is running in (development or production)"
+        },
+        "host": {
+            "type": "string",
+            "default": "main.apis.furwaz.fr"
+        },
+        "port": {
+            "type": "integer",
+            "default": 8080,
+            "description": "The port the API will listen on"
+        },
+        "mailContact": {
+            "type": "string",
+            "default": "contact@furwaz.fr"
+        },
+        "webHost": {
+            "type": "string",
+            "default": "furwaz.fr",
+            "description": "The host address of the web page (used for emails and CORS)"
+        },
+        "security": {
+            "type": "object",
+            "properties": {
+                "hashRounds": {
+                    "type": "number",
+                    "default": 10,
+                    "description": "The number of rounds used to hash passwords"
+                },
+                "jwtSecret": {
+                    "type": "string",
+                    "default": "openssl rand -base64 32",
+                    "description": "The secret used to sign JWT tokens"
+                },
+                "stripeWebhookSecret": {
+                    "type": "string",
+                    "description": "The secret used by Stripe to sign webhooks"
+                },
+                "stripeKey": {
+                    "type": "string",
+                    "description": "The api key used to communicate with Stripe"
+                },
+                "refreshExpiration": {
+                    "type": "string",
+                    "default": "",
+                    "description": "The expiration time of refresh tokens (empty to disable)"
+                },
+                "accessExpiration": {
+                    "type": "string",
+                    "default": "1d",
+                    "description": "The expiration time of refresh tokens (empty to disable)"
+                }
+            }
+        },
+        "redis": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether or not to use Redis for caching (required for delayed jobs)"
+                },
+                "url": {
+                    "type": "string",
+                    "default": "redis://localhost:6379",
+                    "description": "The URL of the Redis server"
+                }
+            }
+        },
+        "mail": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether or not to send emails to users (for password reset, etc.)"
+                },
+                "from": {
+                    "type": "string",
+                    "default": "FurWaz <noreply@furwaz.fr>"
+                },
+                "host": {
+                    "type": "string",
+                    "default": "smtp.gmail.com",
+                    "description": "The host name/address of the SMTP server"
+                },
+                "port": {
+                    "type": "integer",
+                    "default": 587,
+                    "description": "The port of the SMTP server"
+                },
+                "secure": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether or not to use TLS for the SMTP connection"
+                },
+                "user": {
+                    "type": "string",
+                    "default": "",
+                    "description": "The username to use for SMTP connection"
+                },
+                "password": {
+                    "type": "string",
+                    "default": "",
+                    "description": "The password to use for SMTP connection"
+                }
+            },
+            "description": "The API mail server configuration"
+        },
+        "logging": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "string",
+                    "enum": [
+                        "debug",
+                        "info",
+                        "warn",
+                        "error",
+                        "off"
+                    ],
+                    "description": "The maximum type of logs to display (off to disable logging)"
+                },
+                "file": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether or not to log to a file (located in logs/)"
+                }
+            },
+            "description": "The API logging configuration"
+        }
+    }
+}

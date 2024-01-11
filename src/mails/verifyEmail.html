@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ${Lang::mailVerifyEmail/subject} </title>
+</head>
+<body style="font-family: Arial, Helvetica, sans-serif; padding: 1em; margin: 0;">
+    <center>
+        <div style="border-radius: 12px; width: fit-content; overflow: hidden;">
+            <div style="background-color: #475569; color: #f8fafc; padding: 0; margin: 0">
+                <center>
+                    <div style="padding: 1em;">
+                        <img
+                            src="https://${webhost}/img/icon.png"
+                            style="width: 100px; height: 100px;"
+                            alt="Logo"
+                        >
+                        <h1> ${Lang::mailVerifyEmail/subject} </h1>
+                    </div>
+                </center>
+            </div>
+            <div style="background-color: #1e293b; height: 0.3em; padding: 0; margin: 0;"></div>
+            <div style="background-color: #334155; color: #f8fafc; padding: 1em; margin: 0">
+                <center>
+                    <div style="max-width: 400px; height: fit-content;">
+                        <p> ${Lang::mailVerifyEmail/body1} </p>
+                        <p> ${Lang::mailVerifyEmail/body2} </p>
+                        <p> ${Lang::mailVerifyEmail/body3} </p>
+                        <br>
+                        <a
+                            href="${verifyLink}"
+                            style="text-decoration: none;"
+                        >
+                            <div style="background-color: #f97316; color: white; border-radius: 4px; width: fit-content;">
+                                <p style="padding: 1em; font-weight: bold;">
+                                    ${Lang::mailVerifyEmail/button}
+                                </p>
+                            </div>
+                        </a>
+                        <br>
+                        <p> ${Lang::mailVerifyEmail/body4} </p>
+                    </div>
+                </center>
+                <center>
+                    <div style="max-width: 400px; height: fit-content;">
+                        <p> ${Lang::mailVerifyEmail/footer1} </p>
+                        <p> ${Lang::mailVerifyEmail/footer2} </p>
+                    </div>
+                </center>
+            </div>
+        </div>
+    </center>
+</body>
+</html>

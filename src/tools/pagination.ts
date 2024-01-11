@@ -1,35 +1,42 @@
-import type express from 'express';
-import * as sanitizer from '../tools/sanitizer';
+import type { Request } from "express";
 
-class PaginationParameters {
-    public offset: number;
-    public limit: number;
-    public total: number;
+export interface PaginationInfos {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+}
 
-    constructor (offset: number, limit: number, total: number = 0) {
-        this.offset = offset;
-        this.limit = limit;
-        this.total = total;
+export function getPrismaPagination(infos: PaginationInfos) {
+    return {
+        skip: infos.limit * (infos.page - 1),
+        take: infos.limit
     }
 }
 
-export function getPaginationParameters (req: express.Request, res: express.Response): PaginationParameters {
-    const offset = sanitizer.sanitizeNumberField(req.query.offset ?? 0, req, res);
-    const limit = sanitizer.sanitizeNumberField(req.query.limit ?? 10, req, res);
-
-    return new PaginationParameters(
-        Math.max(offset ?? 0, 0),
-        Math.max(Math.min(limit ?? 10, 20), 0)
-    );
+export function getRequestPagination(req: Request): PaginationInfos {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    return {
+        page,
+        limit,
+        total: 0,
+        pages: 0
+    };
 }
 
-export function createPaginationResult (data: any[], paginationParameters: PaginationParameters): any {
+export function getDefaultPagination(): PaginationInfos {
     return {
-        items: data,
-        pagination: {
-            offset: paginationParameters.offset,
-            limit: paginationParameters.limit,
-            total: paginationParameters.total
-        }
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0
     };
+}
+
+export async function getPaginationResult(infos: PaginationInfos, getTotal: (() => Promise<number>|number)) {
+    const total = typeof(getTotal) === 'number' ? getTotal : await getTotal();
+    infos.total = total;
+    infos.pages = Math.ceil(total / infos.limit);
+    return infos;
 }

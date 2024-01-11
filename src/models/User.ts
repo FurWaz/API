@@ -1,0 +1,110 @@
+import { prisma } from "index.ts";
+import Lang from "tools/Lang.ts";
+import { buildResourceMessages } from "tools/Model.ts";
+import Password from "tools/Password.ts";
+
+export interface PrivateUser {
+    id: number;
+    pseudo: string;
+    email: string;
+    roles: number[];
+    apps: number[];
+    profile: number;
+    settings: number;
+    purchases: number[];
+    checkouts: number[];
+    verified: boolean;
+}
+
+export interface PublicUser {
+    id: number;
+    pseudo: string;
+    email: string;
+    roles: number[];
+    apps: number[];
+    verified: boolean;
+}
+
+export class User {
+    public static privateUserIncludes = {
+        roles: true,
+        apps: true,
+        profile: true,
+        settings: true,
+        purchases: true,
+        checkouts: true
+    };
+    public static publicUserIncludes = {
+        roles: true,
+        apps: true
+    };
+
+    public static MESSAGES = {
+        ...buildResourceMessages(Lang.GetText(
+            Lang.CreateTranslationContext('models', 'User')
+        )),
+        LOGGED_IN: {
+            message: Lang.GetText(Lang.CreateTranslationContext('responses', 'LoggedIn')),
+            status: 200
+        },
+        TOKEN_REFRESHED: {
+            message: Lang.GetText(Lang.CreateTranslationContext('responses', 'TokenRefreshed')),
+            status: 200
+        }
+};
+
+    public static async create(pseudo: string, email: string, password: string): Promise<PrivateUser> {
+        return User.makePrivateUser(await prisma.user.create({
+            data: {
+                pseudo,
+                email,
+                password: await Password.hash(password)
+            },
+            include: User.privateUserIncludes
+        }));
+    }
+
+    public static async getAsPublic(id: number): Promise<PublicUser> {
+        return User.makePublicUser(await prisma.user.findUnique({
+            where: { id },
+            include: User.publicUserIncludes
+        }));
+    }
+
+    public static async getAsPrivate(id: number): Promise<PrivateUser> {
+        return User.makePrivateUser(await prisma.user.findUnique({
+            where: { id },
+            include: User.privateUserIncludes
+        }));
+    }
+
+    public static makePublicUser(obj: any): PublicUser {
+        if (!obj) return obj;
+
+        return {
+            id: obj.id,
+            pseudo: obj.pseudo,
+            email: obj.email,
+            roles: obj.roles?.map((r: any) => (typeof(r) === 'object')? r.id: r) as number[] || [],
+            apps: obj.apps?.map((a: any) => (typeof(a) === 'object')? a.id: a) as number[] || [],
+            verified: obj.verified,
+        }
+    }
+
+    public static makePrivateUser(obj: any): PrivateUser {
+        if (!obj) return obj;
+
+        return {
+            id: obj.id as number,
+            pseudo: obj.pseudo as string,
+            email: obj.email as string,
+            roles: obj.roles?.map((r: any) => (typeof(r) === 'object')? r.id: r) as number[] || [],
+            apps: obj.apps?.map((a: any) => (typeof(a) === 'object')? a.id: a) as number[] || [],
+            profile: obj.profile as number || null,
+            settings: obj.settings as number || null,
+            purchases: obj.purchases?.map((p: any) => (typeof(p) === 'object')? p.id: p) as number[] || [],
+            checkouts: obj.checkouts?.map((c: any) => (typeof(c) === 'object')? c.id: c) as number[] || [],
+            verified: obj.verified as boolean
+        } as PrivateUser;
+    }
+}

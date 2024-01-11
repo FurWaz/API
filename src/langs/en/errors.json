@@ -1,0 +1,13 @@
+{
+    "InternalServerError": "Internal server error.",
+    "InvalidToken": "Invalid token.",
+    "ExpiredToken": "Expired token.",
+    "InvalidPassword": "Invalid password.",
+    "AlreadyExists": "${resource} already exists.",
+    "EmailAlreadyVerified": "Email already verified.",
+    "Unauthorized": "Unauthorized.",
+    "InvalidCredentials": "Invalid credentials.",
+    "MissingOldPassword": "Missing old password.",
+    "InvalidOldPassword": "Invalid old password.",
+    "EnhanceYourCalm": "Enhance your calm."
+}

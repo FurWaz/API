@@ -1,0 +1,10 @@
+{
+    "subject": "Vérification de compte",
+    "body1": "Merci de vous être inscrit sur <a href=\"https://${webhost}\" style=\"color: #f97316\">${webhost}</a> !",
+    "body2": "Par mesure de sécurité, nous vous demandons de confirmer votre adresse mail afin de vérifier la validité de celle-ci.",
+    "body3": "Pour ce faire, veuillez cliquer sur le bouton ci-dessous :",
+    "button": "Confirmer mon adresse mail",
+    "body4": "Ou copiez-collez le lien suivant dans votre navigateur : <a href=\"${verifyLink}\" style=\"color: #f97316\">${verifyLink}</a>.",
+    "footer1": "Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer ce mail. Le compte sera supprimé dans 24h.",
+    "footer2": "Si vous avez des questions, n'hésitez pas à nous contacter à l'adresse <a href=\"mailto:${mailto}\" style=\"color: #f97316\">${mailto}</a>."
+}

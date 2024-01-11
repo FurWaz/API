@@ -1,46 +1,86 @@
-import fs from 'fs';
-import path from 'path';
-import util from 'util';
+import Config from "./Config.ts";
 
-function setupLogging () {
-    const logFile = fs.createWriteStream(path.join(__dirname, '../../console.log'), { flags: 'a' });
-    const logFileError = fs.createWriteStream(path.join(__dirname, '../../console.error.log'), { flags: 'a' });
-    const logStdout = process.stdout;
-
-    function consoleToFile (d: any, type: string = 'info', color: string = '\x1b[0m', ...args: any[]) {
-        const now = new Date();
-        const argsStr = args.map((arg) => util.format(arg)).join(' ');
-        if (process.env.NODE_ENV !== 'development') {
-            let strLogFile = `${now.toISOString()}\t[${type}]\t${util.format(d)}`;
-            if (argsStr !== '') strLogFile += ` ${argsStr}`;
-            strLogFile += '\n';
-            logFile.write(strLogFile);
+export default class Logger {
+    public static get prismaSettings(): object {
+        return {
+            errorFormat: 'pretty',
+            log: Config.logging.level === 'debug'
+                ? ['query', 'info', 'warn', 'error']
+                : undefined
         }
-        logStdout.write(`${color}[${type}]\x1b[0m\t${util.format(d)}`);
-        if (argsStr !== '') logStdout.write(` ${argsStr}`);
-        logStdout.write('\n');
     }
 
-    console.log = (d, ...args) => { consoleToFile(d, 'info', '\x1b[0m', ...args); };
-    console.info = (d, ...args) => { consoleToFile(d, 'info', '\x1b[0m', ...args); };
-    console.warn = (d, ...args) => { consoleToFile(d, 'warn', '\x1b[33m', ...args); };
-    console.debug = (d, ...args) => { consoleToFile(d, 'debug', '\x1b[90m', ...args); };
-    console.error = (d, ...args) => {
-        const now = new Date();
-        const str = util.format(d);
-        const argsStr = args.map((arg) => util.format(arg)).join(' ');
-        if (process.env.NODE_ENV !== 'development') {
-            logFile.write(`${now.toISOString()}\t[error]\t${str.split('\n')[0]}${str.split('\n').length > 1 || argsStr !== '' ? '…' : ''}\n`);
-
-            let strLogFileError = `${now.toISOString()}\n\n${str}`;
-            if (argsStr !== '') strLogFileError += ` ${argsStr}`;
-            strLogFileError += '\n\n====================\n\n';
-            logFileError.write(strLogFileError);
-        }
-        logStdout.write(`\x1b[31m[error]\x1b[0m\t${str}`);
-        if (argsStr !== '') logStdout.write(` ${argsStr}`);
-        logStdout.write('\n');
+    public static readonly colors = {
+        gray: '\x1b[90m',
+        blue: '\x1b[34m',
+        orange: '\x1b[33m',
+        red: '\x1b[31m',
+        reset: '\x1b[0m'
     };
-}
 
-export default { setupLogging }
+    private static logLevels = ['error', 'warn', 'info', 'debug']
+    private static LOG = {
+        ERROR: 0,
+        WARN: 1,
+        INFO: 2,
+        DEBUG: 3
+    }
+    private static logLevel: number = -1;
+
+    static init() {
+        console.debug = (...args: string[]) => this.debug(args.join(' '));
+        console.info = (...args: string[]) => this.info(args.join(' '));
+        console.warn = (...args: string[]) => this.warn(args.join(' '));
+        console.error = (...args: string[]) => this.error(args.join(' '));
+
+        this.logLevel = this.logLevels.indexOf(Config.logging.level);
+    }
+
+    /**
+     * Logs a debug message
+     * @param msg message to log as debug
+     */
+    private static debug(msg: string) {
+        if (this.logLevel < Logger.LOG.DEBUG) return;
+        this.log(Logger.colors.gray, 'DEBUG', msg);
+    }
+
+    /**
+     * Logs an info message
+     * @param msg message to log as info
+     */
+    private static info(msg: string) {
+        if (this.logLevel < Logger.LOG.INFO) return;
+        this.log(Logger.colors.blue, 'INFO', msg);
+    }
+
+    /**
+     * Logs a warning message
+     * @param msg message to log as warn
+     */
+    private static warn(msg: string) {
+        if (this.logLevel < Logger.LOG.WARN) return;
+        this.log(Logger.colors.orange, 'WARNING', msg);
+    }
+
+    /**
+     * Logs an error message
+     * @param msg message to log as error
+     */
+    private static error(msg: string) {
+        if (this.logLevel < Logger.LOG.ERROR) return;
+        this.log(Logger.colors.red, 'ERROR', msg);
+    }
+
+    private static log(color: string, prefix: string, msg: string) {
+        // remove useless ExperimentalWarning
+        if (typeof msg === 'string' && msg.includes('ExperimentalWarning')) return;
+
+        const date = new Date();
+        const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        const log = `${Logger.colors.gray}[${time}] [${color}${prefix}${Logger.colors.gray}]${Logger.colors.reset} ${msg}`;
+
+        console.log(log);
+        // TODO : write to file if config.logging.file is true
+    }
+}

@@ -1,47 +1,26 @@
-import type { App, User } from '@prisma/client';
+import Lang from "./Lang.ts";
 
-export function PrivateUser (user: User): any {
-    const obj: any = Object.assign({}, user);
-    delete obj.password;
-    delete obj.lastEmailVerif;
-    delete obj.lastPasswordReset;
-    return obj;
-}
+export default class Formatter {
+    public static formatString(str: string, assigns: { [key: string]: string }|undefined = undefined) {
+        let formatted = str;
 
-export function PublicUser (user: User): any {
-    const obj: any = Object.assign({}, user);
-    delete obj.password;
-    delete obj.send_email;
-    delete obj.lastEmailVerif;
-    delete obj.lastPasswordReset;
-    return obj;
-}
+        // replace all transations (Lang::file/key) by value
+        const matches = formatted.match(/Lang::[a-zA-Z0-9_]+\/[a-zA-Z0-9_]+/g);
+        if (matches) {
+            for (const match of matches) {
+                const [file, key] = match.split('::')[1].split('/');
+                const value = Lang.GetText(Lang.CreateTranslationContext(file, key));
+                formatted = formatted.replaceAll('${'+match+'}', value ?? '');
+            }
+        }
 
-export function PrivateApp (app: App): any {
-    const obj: any = Object.assign({}, app);
-    if (obj.author !== undefined) {
-        obj.author = PrivateUser(obj.author);
-        delete obj.authorId;
+        // replace all ${key} by value
+        if (assigns) {
+            for (const key in assigns) {
+                const value = assigns[key];
+                formatted = formatted.replaceAll('${'+key+'}', value);
+            }
+        }
+        return formatted;
     }
-    return obj;
-}
-
-export function PublicApp (app: App): any {
-    const obj: any = Object.assign({}, app);
-    obj.author = PublicUser(obj.author);
-    delete obj.key;
-    delete obj.authorId;
-    return obj;
-}
-
-export function PublicProduct (product: any): any {
-    const obj: any = Object.assign({}, product);
-    delete obj.appId;
-    return obj;
-}
-
-export function PublicCart (cart: any): any {
-    const obj: any = Object.assign({}, cart);
-    delete obj.userId;
-    return obj;
 }
