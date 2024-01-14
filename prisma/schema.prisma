@@ -21,9 +21,7 @@ datasource db {
 // -> products (the user's cart products)
 // -> purchases (the user's purchased products)
 // -> checkouts (the checkouts made by the user)
-// -> lastPasswordReset (the last time the password reset email has been sent)
-// -> lastEmailVerif (the last time the email verification email has been sent)
-// -> emailVerifiedAt (the date the email has been verified)
+// -> emailVerified (if the email has been verified)
 // -> verified (if the user is verified or not)
 model User {
     id                Int            @id @default(autoincrement())
@@ -38,9 +36,7 @@ model User {
     purchases         UserPurchase[] @relation("user")
     checkouts         Checkout[]     @relation("user")
     settings          UserSettings?
-    lastPasswordReset DateTime?
-    lastEmailVerif    DateTime?
-    emailVerifiedAt   DateTime?
+    emailVerified     Boolean        @default(false)
     verified          Boolean        @default(false)
     createdAt         DateTime       @default(now())
     updatedAt         DateTime       @updatedAt

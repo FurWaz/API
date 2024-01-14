@@ -50,7 +50,7 @@ class RmUnverifiedUser implements TaskActioner {
 
     public action(task: Task) {
         const data = JSON.parse(task.data);
-        prisma.user.delete({ where: { id: data.id, lastEmailVerif: null } });
+        prisma.user.delete({ where: { id: data.id, emailVerified: false } });
     }
 }
 export const rmUnverifiedUser = new RmUnverifiedUser();

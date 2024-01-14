@@ -33,7 +33,7 @@ export class Timer {
     
     public static registerAction(action: TaskActioner) {
         if (!Config.redis.enabled) {
-            console.error('Redis isn\'t enabled on this server, please enable it to use the Timer and Delayed Tasks.');
+            console.error('[registerAction for ' + action.type + '] Redis isn\'t enabled on this server, please enable it to use the Timer and Delayed Tasks.');
             return;
         }
 

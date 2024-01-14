@@ -29,10 +29,10 @@ export async function verifyUserEmail(token: string): Promise<boolean> {
     const user = await prisma.user.findUnique({ where: { id: payload.id } });
     if (user === null)
         throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
-    if (user.lastEmailVerif !== null)
+    if (user.emailVerified)
         throw new HTTPError(HTTP.EXPIRED_TOKEN, Lang.GetText(Lang.CreateTranslationContext('errors', 'EmailAlreadyVerified')));
 
-    await prisma.user.update({ where: { id: payload.id }, data: { lastEmailVerif: new Date() } });
+    await prisma.user.update({ where: { id: payload.id }, data: { emailVerified: true } });
     return true;
 }
 
