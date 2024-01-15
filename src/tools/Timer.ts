@@ -18,12 +18,13 @@ export class Task {
     }
 }
 
+const redisUrl = Config.redis.url;
 const queueOptions = {
     removeOnSuccess: true,
     redis: {
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT,
-        password: process.env.DB_PASS,
+        host: redisUrl.split('://')[1].split(':')[0],
+        port: redisUrl.split('://')[1].split(':')[1],
+        password: '',
     },
 }
 
