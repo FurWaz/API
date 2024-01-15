@@ -3,4 +3,3 @@ node_modules/
 docker-compose.yml
 dist/
 config.json
-prisma/migrations/
