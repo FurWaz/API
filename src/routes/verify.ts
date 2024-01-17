@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post('/email', async (req, res) => {
     /**
-     * #swagger.tags = ['Verifications']
+     * #swagger.tags = ['Other']
      * #swagger.description = 'Validate a user email address'
      * #swagger.operationId = 'verifyUserEmail'
      */
@@ -36,7 +36,7 @@ router.post('/email', async (req, res) => {
 
 router.get('/token', async (req, res) => {
     /**
-     * #swagger.tags = ['Verifications']
+     * #swagger.tags = ['Other']
      * #swagger.description = 'Verify an API token'
      * #swagger.operationId = 'verifyToken'
      */

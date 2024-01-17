@@ -70,10 +70,15 @@
                     "default": true,
                     "description": "Whether or not to use Redis for caching (required for delayed jobs)"
                 },
-                "url": {
+                "host": {
                     "type": "string",
-                    "default": "redis://localhost:6379",
-                    "description": "The URL of the Redis server"
+                    "default": "localhost",
+                    "description": "The host name/address of the Redis server"
+                },
+                "port": {
+                    "type": "integer",
+                    "default": 6379,
+                    "description": "The port of the Redis server"
                 }
             }
         },

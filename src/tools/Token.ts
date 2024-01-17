@@ -64,6 +64,7 @@ export class TokenUtils {
     }
 
     static async decodePayload(token: string): Promise<object> {
+        console.trace();
         return new Promise((resolve, reject) => {
             jwt.verify(token, Config.security.jwtSecret, (err, decoded) => {
                 if (err) reject(new HTTPError(HTTP.INVALID_TOKEN, Lang.GetText(this.invalidTokenContext)));

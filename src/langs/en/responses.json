@@ -5,6 +5,8 @@
     "Fetched":  "${resource} feched successfully",
     "NotFound": "${resource} not found",
     "UserEmailVerified": "User email verified successfully",
+    "UserPasswordReset": "User password reset successfully",
+    "PasswordResetEmailSent": "Password reset email sent successfully",
     "LoggedIn": "Logged in successfully",
     "TokenRefreshed": "Token refreshed successfully",
     "PortalTokenGenerated": "Portal token generated successfully",

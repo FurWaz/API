@@ -14,14 +14,21 @@ import { TokenUtils } from 'tools/Token.ts';
 import Password from 'tools/Password.ts';
 
 type EmailVerificationTokenPayload = { type: 'emailVerify'; id: number; };
+type passwordResetTokenPayload = { type: 'passwordReset'; id: number; };
 async function createEmailVerifyToken(userId: number) {
     return TokenUtils.encodePayload({
         type: 'emailVerify',
         id: userId
     }, '24h');
 }
+async function createPasswordResetToken(userId: number) {
+    return TokenUtils.encodePayload({
+        type: 'passwordReset',
+        id: userId
+    }, '15m');
+}
 
-export async function verifyUserEmail(token: string): Promise<boolean> {
+export async function verifyUserEmail(token: string) {
     const payload = await TokenUtils.decodePayload(token) as EmailVerificationTokenPayload;
     if (payload === null || payload.type !== 'emailVerify')
         throw new HTTPError(HTTP.INVALID_TOKEN, Lang.GetText(Lang.CreateTranslationContext('errors', 'InvalidToken')));
@@ -33,7 +40,38 @@ export async function verifyUserEmail(token: string): Promise<boolean> {
         throw new HTTPError(HTTP.EXPIRED_TOKEN, Lang.GetText(Lang.CreateTranslationContext('errors', 'EmailAlreadyVerified')));
 
     await prisma.user.update({ where: { id: payload.id }, data: { emailVerified: true } });
-    return true;
+}
+
+export async function sendPasswordResetEmail(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (user === null)
+        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+
+    const passwordResetToken = await createPasswordResetToken(user.id);
+    Mailer.sendMail(
+        user.email,
+        Mail.fromFile(
+            Formatter.formatString('${Lang::mailResetPassword/subject}'),
+            getRootDir() + 'mails/resetPassword.html',
+            {
+                webhost: Config.webHost,
+                resetLink: `${Config.webHost}/reset/password?token=${passwordResetToken}`,
+                mailto: Config.mailContact
+            }
+        )
+    );
+}
+
+export async function resetPassword(token: string, password: string) {
+    const payload = await TokenUtils.decodePayload(token) as passwordResetTokenPayload;
+    if (payload === null || payload.type !== 'passwordReset')
+        throw new HTTPError(HTTP.INVALID_TOKEN, Lang.GetText(Lang.CreateTranslationContext('errors', 'InvalidToken')));
+
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (user === null)
+        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+
+    await prisma.user.update({ where: { id: payload.id }, data: { password: await Password.hash(password) } });
 }
 
 /**

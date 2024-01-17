@@ -151,6 +151,73 @@
         }
       }
     },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Get the user that is logged in",
+        "operationId": "getOwnUser",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Update the user that is logged in",
+        "operationId": "updateOwnUser",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Delete the user that is logged in",
+        "operationId": "deleteOwnUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/users/{id}": {
       "get": {
         "tags": [
@@ -189,24 +256,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "pseudo": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -240,105 +289,6 @@
               "type": "object",
               "properties": {
                 "password": {
-                  "example": "any"
-                },
-                "pseudo": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/users/me": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Get the user that is logged in",
-        "operationId": "getOwnUser",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      },
-      "patch": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Update the user that is logged in",
-        "operationId": "updateOwnUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "pseudo": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Delete the user that is logged in",
-        "operationId": "deleteOwnUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "example": "any"
-                },
-                "pseudo": {
-                  "example": "any"
-                },
-                "email": {
                   "example": "any"
                 }
               }
@@ -400,15 +350,6 @@
                 },
                 "birthdate": {
                   "example": "any"
-                },
-                "pseudo": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
                 }
               }
             }
@@ -437,24 +378,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "pseudo": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -505,6 +428,25 @@
             }
           }
         ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/me": {
+      "get": {
+        "tags": [
+          "Apps"
+        ],
+        "description": "Get the apps that the user owns",
+        "operationId": "getOwnApps",
         "responses": {
           "default": {
             "description": ""
@@ -595,27 +537,23 @@
             "in": "path",
             "required": true,
             "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
+          },
           {
-            "ApiKeyAuth": []
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                }
+              }
+            }
           }
-        ]
-      }
-    },
-    "/apps/me": {
-      "get": {
-        "tags": [
-          "Apps"
         ],
-        "description": "Get the apps that the user owns",
-        "operationId": "getOwnApps",
         "responses": {
           "default": {
             "description": ""
@@ -731,7 +669,7 @@
     "/verify/email": {
       "post": {
         "tags": [
-          "Verifications"
+          "Other"
         ],
         "description": "Validate a user email address",
         "operationId": "verifyUserEmail",
@@ -759,7 +697,7 @@
     "/verify/token": {
       "get": {
         "tags": [
-          "Verifications"
+          "Other"
         ],
         "description": "Verify an API token",
         "operationId": "verifyToken",
@@ -774,12 +712,50 @@
           "default": {
             "description": ""
           }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
+        }
+      }
+    },
+    "/reset/password": {
+      "get": {
+        "tags": [
+          "Other"
+        ],
+        "description": "Send a password reset email",
+        "operationId": "sendPasswordResetEmail",
+        "responses": {
+          "default": {
+            "description": ""
           }
-        ]
+        }
+      },
+      "post": {
+        "tags": [
+          "Other"
+        ],
+        "description": "Reset a user password",
+        "operationId": "resetUserPassword",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     }
   },

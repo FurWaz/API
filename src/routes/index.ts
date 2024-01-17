@@ -7,6 +7,7 @@ import routerUsers from './users.ts';
 import routerApps from './apps.ts';
 import routerPortal from './portal.ts';
 import routerVerify from './verify.ts';
+import routerReset from './reset.ts';
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use('/users', routerUsers);
 router.use('/apps', routerApps);
 router.use('/portal', routerPortal);
 router.use('/verify', routerVerify);
+router.use('/reset', routerReset);
 
 export default router;
