@@ -142,7 +142,7 @@ export async function setUserInfos(id: number, infos: any) {
             password: infos.password
         }
     });
-    return User.makePrivateUser(newUser);
+    return User.makePrivate(newUser);
 }
 
 export async function deleteUser(id: number, password: string) {

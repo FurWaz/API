@@ -9,6 +9,13 @@ export default class HTTPError extends Error {
         );
     }
 
+    public static Forbidden() {
+        return new HTTPError(
+            HTTP.FORBIDDEN,
+            Lang.GetText(Lang.CreateTranslationContext('errors', 'Forbidden'))
+        );
+    }
+
     public static InvalidPassword() {
         return new HTTPError(
             HTTP.UNAUTHORIZED,

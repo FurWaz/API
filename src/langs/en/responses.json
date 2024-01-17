@@ -4,6 +4,8 @@
     "Deleted":  "${resource} deleted successfully",
     "Fetched":  "${resource} feched successfully",
     "NotFound": "${resource} not found",
+    "Added":    "${resource} added successfully",
+    "Removed":  "${resource} removed successfully",
     "UserEmailVerified": "User email verified successfully",
     "UserPasswordReset": "User password reset successfully",
     "PasswordResetEmailSent": "Password reset email sent successfully",
@@ -13,5 +15,8 @@
     "PortalUserRetrieved": "Portal user retrieved successfully",
     "PortalAppRetrieved": "Portal app retrieved successfully",
     "TokenVerified": "Token verified successfully",
-    "PortalUserConnected": "Connected through portal successfully"
+    "PortalUserConnected": "Connected through portal successfully",
+    "BuyTokenGenerated": "Buy token generated successfully",
+    "BuyInfosFetched": "Buy infos fetched successfully",
+    "BuyAccepted": "Buy accepted successfully"
 }

@@ -7,7 +7,8 @@ async function createAppKey(app: PrivateApp) {
     return await TokenUtils.encode({
         id: app.id,
         type: 'access',
-        resource: 'app'
+        resource: 'app',
+        payload: { authorId: app.authorId }
     });
 }
 
@@ -36,16 +37,12 @@ export class App {
     };
 
     public static async create(userId: number, name: string, description: string): Promise<PrivateApp> {
-        const app = App.makePrivateApp(await prisma.app.create({
+        const app = App.makePrivate(await prisma.app.create({
             data: {
                 name,
                 description,
                 key: '',
-                author: {
-                    connect: {
-                        id: userId
-                    }
-                }
+                author: { connect: { id: userId } }
             }
         }));
         const key = await createAppKey(app);
@@ -57,18 +54,18 @@ export class App {
     }
 
     public static async getAsPublic(id: number): Promise<PublicApp> {
-        return App.makePublicApp(await prisma.app.findUnique({
+        return App.makePublic(await prisma.app.findUnique({
             where: { id }
         }));
     }
 
     public static async getAsPrivate(id: number): Promise<PrivateApp> {
-        return App.makePrivateApp(await prisma.app.findUnique({
+        return App.makePrivate(await prisma.app.findUnique({
             where: { id }
         }));
     }
 
-    public static makePublicApp(obj: any): PublicApp {
+    public static makePublic(obj: any): PublicApp {
         if (!obj) return obj;
 
         return {
@@ -80,7 +77,7 @@ export class App {
         };
     }
 
-    public static makePrivateApp(obj: any): PrivateApp {
+    public static makePrivate(obj: any): PrivateApp {
         if (!obj) return obj;
 
         return {

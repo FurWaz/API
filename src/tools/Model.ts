@@ -8,7 +8,9 @@ export function buildResourceMessages(resource: string) {
         UPDATED:   buildUpdateMessage(resource),
         DELETED:   buildDeleteMessage(resource),
         FETCHED:   buildFetchMessage(resource),
-        NOT_FOUND: buildNotFoundMessage(resource)
+        NOT_FOUND: buildNotFoundMessage(resource),
+        ADDED:     buildMessage(resource, 'Added', HTTP.OK),
+        REMOVED:   buildMessage(resource, 'Removed', HTTP.OK)
     };
 }
 

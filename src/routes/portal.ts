@@ -51,12 +51,11 @@ router.get('/:portal/user', authapp, async (req, res) => {
 });
 
 // Get the portal app
-router.get('/:portal/app', authuser, async (req, res) => {
+router.get('/:portal/app', async (req, res) => {
     /**
      * #swagger.tags = ['Portal']
      * #swagger.description = 'Get the portal app'
      * #swagger.operationId = 'getPortalApp'
-     * #swagger.security = [{ ApiKeyAuth: [] }]
      */
     const { error } = portalSchema.validate(req.params);
     if (error) return respondError(res, error);

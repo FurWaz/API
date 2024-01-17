@@ -9,7 +9,7 @@ export async function getAllApps(pagination: PaginationInfos): Promise<PublicApp
     const apps = await prisma.app.findMany({
         ...getPrismaPagination(pagination)
     });
-    return apps.map(app => App.makePublicApp(app));
+    return apps.map(app => App.makePublic(app));
 }
 
 export async function createApp(userId: number, name: string, description: string): Promise<PrivateApp> {
@@ -49,7 +49,7 @@ export async function updateApp(userId: number, id: number, infos: any) {
             description: infos.description ?? app.description
         }
     });
-    return App.makePrivateApp(newApp);
+    return App.makePrivate(newApp);
 }
 
 export async function deleteApp(userId: number, id: number) {
@@ -83,8 +83,8 @@ export async function getAppAsUser(userId: number, appId: number): Promise<Publi
         throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
 
     if (app.authorId !== userId)
-        return App.makePublicApp(app);
-    return App.makePrivateApp(app);
+        return App.makePublic(app);
+    return App.makePrivate(app);
 }
 
 export async function getOwnApps(userId: number, pagination: PaginationInfos): Promise<PublicApp[]> {
@@ -92,5 +92,5 @@ export async function getOwnApps(userId: number, pagination: PaginationInfos): P
         where: { authorId: userId },
         ...getPrismaPagination(pagination)
     });
-    return apps.map(app => App.makePrivateApp(app));
+    return apps.map(App.makePrivate);
 }

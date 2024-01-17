@@ -36,7 +36,7 @@ export async function getUserTokens(pseudo: string, email: string, password: str
                 { email }
             ]
         },
-        include: User.privateUserIncludes
+        include: User.privateIncludes
     });
 
     if (!user || !await Password.compare(password, user.password))
@@ -45,7 +45,7 @@ export async function getUserTokens(pseudo: string, email: string, password: str
             Lang.GetText(Lang.CreateTranslationContext('errors', 'InvalidCredentials'))
         );
     
-    const privateUser = User.makePrivateUser(user);
+    const privateUser = User.makePrivate(user);
     return {
         refresh: await createUserRefreshToken(privateUser),
         access: await createUserAccessToken(privateUser)

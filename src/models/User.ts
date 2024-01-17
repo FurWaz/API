@@ -26,7 +26,7 @@ export interface PublicUser {
 }
 
 export class User {
-    public static privateUserIncludes = {
+    public static privateIncludes = {
         roles: true,
         apps: true,
         profile: true,
@@ -34,7 +34,7 @@ export class User {
         purchases: true,
         checkouts: true
     };
-    public static publicUserIncludes = {
+    public static publicIncludes = {
         roles: true,
         apps: true
     };
@@ -54,31 +54,31 @@ export class User {
 };
 
     public static async create(pseudo: string, email: string, password: string): Promise<PrivateUser> {
-        return User.makePrivateUser(await prisma.user.create({
+        return User.makePrivate(await prisma.user.create({
             data: {
                 pseudo,
                 email,
                 password: await Password.hash(password)
             },
-            include: User.privateUserIncludes
+            include: User.privateIncludes
         }));
     }
 
     public static async getAsPublic(id: number): Promise<PublicUser> {
-        return User.makePublicUser(await prisma.user.findUnique({
+        return User.makePublic(await prisma.user.findUnique({
             where: { id },
-            include: User.publicUserIncludes
+            include: User.publicIncludes
         }));
     }
 
     public static async getAsPrivate(id: number): Promise<PrivateUser> {
-        return User.makePrivateUser(await prisma.user.findUnique({
+        return User.makePrivate(await prisma.user.findUnique({
             where: { id },
-            include: User.privateUserIncludes
+            include: User.privateIncludes
         }));
     }
 
-    public static makePublicUser(obj: any): PublicUser {
+    public static makePublic(obj: any): PublicUser {
         if (!obj) return obj;
 
         return {
@@ -91,7 +91,7 @@ export class User {
         }
     }
 
-    public static makePrivateUser(obj: any): PrivateUser {
+    public static makePrivate(obj: any): PrivateUser {
         if (!obj) return obj;
 
         return {

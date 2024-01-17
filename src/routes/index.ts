@@ -8,6 +8,7 @@ import routerApps from './apps.ts';
 import routerPortal from './portal.ts';
 import routerVerify from './verify.ts';
 import routerReset from './reset.ts';
+import routerStore from './store.ts';
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.use('/auth', routerAuth);
 router.use('/users', routerUsers);
 router.use('/apps', routerApps);
 router.use('/portal', routerPortal);
+router.use('/store', routerStore);
 router.use('/verify', routerVerify);
 router.use('/reset', routerReset);
 

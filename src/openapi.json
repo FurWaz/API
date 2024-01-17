@@ -631,12 +631,7 @@
           "default": {
             "description": ""
           }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
+        }
       }
     },
     "/portal/{portal}": {
@@ -654,6 +649,456 @@
             "type": "string"
           }
         ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/buy/": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Request a token for user product addition",
+        "operationId": "requestBuyToken",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "productId": {
+                  "example": "any"
+                },
+                "userId": {
+                  "example": "any"
+                },
+                "quantity": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/buy/{token}/infos": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Get product infos",
+        "operationId": "getBuyInfos",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/buy/{token}/status": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Get product status",
+        "operationId": "getBuyStatus",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/buy/{token}": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Add product to cart",
+        "operationId": "addProductToCart",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/cart/": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Get own user cart",
+        "operationId": "getUserProducts",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Empty own user cart",
+        "operationId": "deleteUserProducts",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/cart/product/{productId}": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Get cart product",
+        "operationId": "getUserProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Update cart product",
+        "operationId": "updateUserProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Delete cart product",
+        "operationId": "deleteUserProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/product/": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Create a new product",
+        "operationId": "createProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "price": {
+                  "example": "any"
+                },
+                "app": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Get own app products",
+        "operationId": "getOwnAppProducts",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/product/{id}": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Get a product",
+        "operationId": "getProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Update a product",
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "price": {
+                  "example": "any"
+                },
+                "app": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Delete a product",
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "price": {
+                  "example": "any"
+                },
+                "app": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/store/checkout/": {
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Create a new product",
+        "operationId": "createProduct",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Get own app products",
+        "operationId": "getOwnAppProducts",
         "responses": {
           "default": {
             "description": ""
@@ -722,6 +1167,13 @@
         ],
         "description": "Send a password reset email",
         "operationId": "sendPasswordResetEmail",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -811,6 +1263,74 @@
         "verified": {
           "type": "boolean",
           "example": true
+        }
+      }
+    },
+    "PrivateProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 0
+        },
+        "name": {
+          "type": "string",
+          "example": "string"
+        },
+        "description": {
+          "type": "string",
+          "example": "string"
+        },
+        "price": {
+          "type": "number",
+          "example": 0
+        },
+        "app": {
+          "type": "number",
+          "example": 0
+        },
+        "carts": {
+          "type": "array",
+          "example": [
+            0
+          ],
+          "items": {
+            "type": "number"
+          }
+        },
+        "purchases": {
+          "type": "array",
+          "example": [
+            0
+          ],
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "PublicProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 0
+        },
+        "name": {
+          "type": "string",
+          "example": "string"
+        },
+        "description": {
+          "type": "string",
+          "example": "string"
+        },
+        "price": {
+          "type": "number",
+          "example": 0
+        },
+        "app": {
+          "type": "number",
+          "example": 0
         }
       }
     },
@@ -915,6 +1435,27 @@
         "verified": {
           "type": "boolean",
           "example": true
+        }
+      }
+    },
+    "PrivateUserProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 0
+        },
+        "userId": {
+          "type": "number",
+          "example": 0
+        },
+        "productId": {
+          "type": "number",
+          "example": 0
+        },
+        "quantity": {
+          "type": "number",
+          "example": 0
         }
       }
     }

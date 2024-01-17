@@ -4,7 +4,7 @@ import * as controller from '../controllers/apps.ts';
 import { App } from 'models/App.ts';
 import { respondError, respond } from 'tools/Responses.ts';
 import { auth, authuser } from 'middleware/auth.ts';
-import { getRequestPagination, getPaginationResult, getPrismaPagination } from 'tools/Pagination.ts';
+import { getRequestPagination, getPaginationResult } from 'tools/Pagination.ts';
 import { prisma } from 'index.ts';
 const router = express.Router();
 

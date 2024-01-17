@@ -1,7 +1,8 @@
 import { type Request, type Response, type NextFunction } from 'express';
 import HTTPError from 'errors/HTTPError.ts';
-import { TokenUtils } from 'tools/Token.ts';
+import { TokenDataAccess, TokenUtils } from 'tools/Token.ts';
 import { respondError } from 'tools/Responses.ts';
+import { Role } from 'tools/Roles.ts';
 
 /**
  * Authentication middleware, authenticates the request's resource (user, app, ...)
@@ -56,4 +57,17 @@ export async function authapp(req: Request, res: Response, next: NextFunction) {
             return respondError(res, HTTPError.Unauthorized());
         next();
     });
+}
+
+export function hasPerm(perm: Role) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        await authuser(req, res, () => {
+            const token = res.locals.token as TokenDataAccess;
+
+            if (!perm.hasPerm(token.payload.roles)) {
+                return respondError(res, HTTPError.Forbidden());
+            }
+            next();
+        });
+    }
 }

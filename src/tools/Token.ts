@@ -13,6 +13,15 @@ export interface TokenData {
     payload?: any;
     expiration?: string;
 }
+export interface TokenDataAccess extends TokenData {
+    payload: { roles: string; };
+}
+export interface TokenDataRefresh extends TokenData {
+    payload: undefined;
+}
+export interface TokenDataApp extends TokenData {
+    payload: { authorId: number; }
+}
 
 export class TokenUtils {
     private static invalidTokenContext = Lang.CreateTranslationContext('errors', 'InvalidToken');
@@ -64,7 +73,6 @@ export class TokenUtils {
     }
 
     static async decodePayload(token: string): Promise<object> {
-        console.trace();
         return new Promise((resolve, reject) => {
             jwt.verify(token, Config.security.jwtSecret, (err, decoded) => {
                 if (err) reject(new HTTPError(HTTP.INVALID_TOKEN, Lang.GetText(this.invalidTokenContext)));
