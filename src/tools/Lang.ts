@@ -1,4 +1,4 @@
-import { getRootDir } from './Dirs.ts';
+import { getRootDir } from 'index.ts';
 import Formatter from './Formatter.ts';
 import fs from 'fs';
 

@@ -2,7 +2,7 @@ import swaggerUI from 'swagger-ui-express';
 import Config from 'tools/Config.ts';
 import express from 'express';
 import { readFile } from 'fs';
-import { getRootDir } from 'tools/Dirs.ts';
+import { getRootDir } from 'index.ts';
 
 const router = express.Router();
 const OPENAPI_PATH = getRootDir() + '/openapi.json';

@@ -6,7 +6,7 @@ import { PrivateUser, PublicUser, User } from 'models/User.ts';
 import Mailer from 'tools/Mailer.ts';
 import Mail from 'tools/Mail.ts';
 import Formatter from 'tools/Formatter.ts';
-import { getRootDir } from 'tools/Dirs.ts';
+import { getRootDir } from 'index.ts';
 import Config from 'tools/Config.ts';
 import { rmUnverifiedUser } from 'tools/Tasks.ts';
 import { Timer } from 'tools/Timer.ts';

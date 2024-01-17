@@ -1,9 +1,10 @@
+import getReqLang from 'middleware/getReqLang.ts';
 import { PrismaClient } from '@prisma/client'
-import cors from 'cors';
+import { fileURLToPath } from 'url';
 import Logger from 'tools/Logger.ts';
 import Config from 'tools/Config.ts'
 import express from 'express';
-import getReqLang from 'middleware/getReqLang.ts';
+import cors from 'cors';
 import 'tools/Tasks.ts';
 
 const prisma = new PrismaClient(Logger.prismaSettings);
@@ -21,4 +22,8 @@ app.listen(Config.port, () => {
     console.info('Server is listening on port ' + Config.port);
 });
 
-export { app, prisma };
+function getRootDir() {
+    return fileURLToPath(new URL('.', import.meta.url));
+}
+
+export { app, prisma, getRootDir };
