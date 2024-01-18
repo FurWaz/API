@@ -18,5 +18,6 @@
     "PortalUserConnected": "Connected through portal successfully",
     "BuyTokenGenerated": "Buy token generated successfully",
     "BuyInfosFetched": "Buy infos fetched successfully",
-    "BuyAccepted": "Buy accepted successfully"
+    "BuyAccepted": "Buy accepted successfully",
+    "PayementIntentCreated": "Payement intent created successfully"
 }

@@ -46,23 +46,23 @@ model User {
 // -> userId (the profile's user's id)
 // -> firstname (the firstname of the user)
 // -> lastname (the lastname of the user)
-// -> adress (the adress of the user)
+// -> address (the address of the user)
 // -> city (the city of the user)
 // -> zipcode (the zip code of the user)
 model UserProfile {
-    id        Int      @id @default(autoincrement())
-    userId    Int      @unique
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    firstname String   @db.VarChar(64)
-    lastname  String   @db.VarChar(64)
-    adress    String   @db.VarChar(255)
-    city      String   @db.VarChar(64)
-    zipcode   String   @db.VarChar(16)
-    country   String   @db.VarChar(64)
-    phone     String   @db.VarChar(16)
-    birthdate DateTime @db.DateTime
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id        Int       @id @default(autoincrement())
+    userId    Int       @unique
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    firstname String    @db.VarChar(64)
+    lastname  String    @db.VarChar(64)
+    address   String    @db.VarChar(255)
+    city      String    @db.VarChar(64)
+    zipcode   String    @db.VarChar(16)
+    country   String?   @db.VarChar(64)
+    phone     String?   @db.VarChar(16)
+    birthdate DateTime? @db.DateTime
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
 }
 
 // Represents a user settings
@@ -180,7 +180,7 @@ model UserPurchase {
     user       User       @relation("user", fields: [userId], references: [id], onDelete: Cascade)
     productId  Int        @db.Int
     product    Product    @relation("product", fields: [productId], references: [id], onDelete: Cascade)
-    quantity   Int        @default(1)
+    quantity   Int        @db.Int
     createdAt  DateTime   @default(now())
     updatedAt  DateTime   @updatedAt
 }
@@ -191,7 +191,7 @@ model UserPurchase {
 // -> firstname (the firstname of the user)
 // -> lastname (the lastname of the user)
 // -> email (the email of the user)
-// -> adress (the adress of the user)
+// -> address (the address of the user)
 // -> city (the city of the user)
 // -> zipcode (the zip code of the user)
 // -> products (the products in the checkout session)
@@ -204,13 +204,14 @@ model Checkout {
     firstname  String         @db.VarChar(64)
     lastname   String         @db.VarChar(64)
     email      String         @db.VarChar(255)
-    adress     String         @db.VarChar(255)
+    address    String         @db.VarChar(255)
     city       String         @db.VarChar(64)
     zipcode    String         @db.VarChar(16)
+    amount     Float          @db.Float
     products   CheckoutProduct[]
     statusId   Int
     status     CheckoutStatus @relation("status", fields: [statusId], references: [id], onDelete: Cascade)
-    intentId   String         @db.VarChar(64)
+    intentId   String         @unique @db.VarChar(64)
     createdAt  DateTime       @default(now())
     updatedAt  DateTime       @updatedAt
 }
@@ -219,8 +220,8 @@ model CheckoutProduct {
     id         Int        @id @default(autoincrement())
     checkoutId Int        @db.Int
     checkout   Checkout   @relation(fields: [checkoutId], references: [id], onDelete: Cascade)
-
-    quantity   Int        @default(1)
+    productId  Int        @db.Int
+    quantity   Int        @db.Int
     createdAt  DateTime   @default(now())
     updatedAt  DateTime   @updatedAt
 }

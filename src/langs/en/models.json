@@ -2,5 +2,6 @@
     "User": "User",
     "App": "App",
     "Product": "Product",
-    "Cart": "Cart"
+    "Cart": "Cart",
+    "Checkout": "Checkout"
 }

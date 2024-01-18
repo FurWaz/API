@@ -35,6 +35,7 @@ router.post('/', authuser, async (req, res) => {
         name: Joi.string().required(),
         description: Joi.string().required(),
     });
+    console.log(req.body);
     const { error } = schema.validate(req.body);
     if (error) return respondError(res, error);
     

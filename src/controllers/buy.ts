@@ -85,7 +85,7 @@ export async function getBuyStatus(res: Response, token: string, appId: number) 
 export async function getBuyInfos(token: string, userId: number) {
     const infos = buyTokens[token];
     if (infos === undefined) throw HTTPError.TokenExpired();
-    if (infos.userId !== userId) throw HTTPError.Unauthorized();
+    if (infos.userId !== userId || infos.accepted) throw HTTPError.Unauthorized();
 
     if (infos.expiration < new Date()) {
         deleteBuy(token);
@@ -102,7 +102,7 @@ export async function getBuyInfos(token: string, userId: number) {
 export async function acceptBuy(token: string, userId: number) {
     const infos = buyTokens[token];
     if (infos === undefined) throw HTTPError.TokenExpired();
-    if (infos.userId !== userId) throw HTTPError.Unauthorized();
+    if (infos.userId !== userId || infos.accepted) throw HTTPError.Unauthorized();
 
     if (infos.expiration < new Date()) {
         deleteBuy(token);

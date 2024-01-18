@@ -23,10 +23,11 @@ export interface PublicProduct {
 export class Product {
     public static privateIncludes = {
         carts: true,
-        purchases: true
+        purchases: true,
+        app: true
     };
     public static publicIncludes = {
-        
+        app: true
     };
 
     public static MESSAGES = {
@@ -70,7 +71,7 @@ export class Product {
             name: obj.name,
             description: obj.description,
             price: obj.price,
-            app: obj.app
+            app: typeof(obj.app) === 'number'? obj.app : obj.app.id
         };
     }
 
@@ -82,7 +83,7 @@ export class Product {
             name: obj.name,
             description: obj.description,
             price: obj.price,
-            app: obj.app,
+            app: typeof(obj.app) === 'number'? obj.app : obj.app.id,
             carts: obj.carts?.map((c: any) => (typeof(c) === 'object')? c.id: c) as number[] || [],
             purchases: obj.purchases?.map((p: any) => (typeof(p) === 'object')? p.id: p) as number[] || []
         };

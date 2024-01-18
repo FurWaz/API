@@ -28,7 +28,7 @@ export class Role {
 
         if (typeof(list) === 'string')
             return await this.hasPerm(list.split(',').map(s => s.trim()));
-        return list.includes(this.name);
+        return list.includes(this.name) || list.includes(this.id.toString());
     }
 }
 

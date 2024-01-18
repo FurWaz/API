@@ -5,6 +5,7 @@ import { PrivateUser, User } from 'models/User.ts';
 import { respondError, respond } from 'tools/Responses.ts';
 import { auth, authuser } from 'middleware/auth.ts';
 import HTTPError from 'errors/HTTPError.ts';
+import { TokenDataAccess } from 'tools/Token.ts';
 const router = express.Router();
 
 // Create a new user
@@ -91,6 +92,63 @@ router.delete('/me', authuser, async (req, res) => {
     } catch (err) { respondError(res, err); }
 });
 
+// Get my user profile
+router.get('/me/profile', authuser, async (req, res) => {
+    /**
+     * #swagger.tags = ['Users']
+     * #swagger.description = 'Get the user profile that is logged in'
+     * #swagger.operationId = 'getOwnUserProfile'
+     * #swagger.security = [{ ApiKeyAuth: [] }]
+     */
+    const token = res.locals.token as TokenDataAccess;
+    const profile = await controller.getUserProfile(token.id);
+    respond(res, User.MESSAGES.FETCHED, profile);
+});
+
+// Update my user profile
+router.patch('/me/profile', authuser, async (req, res) => {
+    /**
+     * #swagger.tags = ['Users']
+     * #swagger.description = 'Update a user profile by its ID'
+     * #swagger.operationId = 'updateUserProfileById'
+     * #swagger.security = [{ ApiKeyAuth: [] }]
+     */
+    const schema = Joi.object({
+        firstname: Joi.string(),
+        lastname: Joi.string(),
+        address: Joi.string(),
+        city: Joi.string(),
+        zip: Joi.string(),
+        country: Joi.string(),
+        phone: Joi.string(),
+        birthdate: Joi.date()
+    });
+    const { error } = schema.validate({ ...req.body });
+    if (error) return respondError(res, error);
+
+    const token = res.locals.token as TokenDataAccess;
+    const { firstname, lastname, address, city, zip, country, phone, birthdate } = req.body;
+        
+    const newProfile = await controller.setUserProfile(
+        token.id,
+        { firstname, lastname, address, city, zip, country, phone, birthdate }
+    );
+    respond(res, User.MESSAGES.UPDATED, newProfile);
+});
+
+// Delete my user profile
+router.delete('/me/profile', authuser, async (req, res) => {
+    /**
+     * #swagger.tags = ['Users']
+     * #swagger.description = 'Delete a user profile by its ID'
+     * #swagger.operationId = 'deleteUserProfileById'
+     * #swagger.security = [{ ApiKeyAuth: [] }]
+     */
+
+    const token = res.locals.token as TokenDataAccess;
+    await controller.deleteUserProfile(token.id);
+});
+
 // Get a user by its ID
 router.get('/:id', auth, async (req, res) => {
     /**
@@ -169,65 +227,6 @@ router.delete('/:id', authuser, async (req, res) => {
         await controller.deleteUser(id, req.body.password);
         respond(res, User.MESSAGES.DELETED);
     } catch (err) { respondError(res, err); }
-});
-
-// Delete a user profile
-router.patch('/:id/profile', authuser, async (req, res) => {
-    /**
-     * #swagger.tags = ['Users']
-     * #swagger.description = 'Update a user profile by its ID'
-     * #swagger.operationId = 'updateUserProfileById'
-     * #swagger.security = [{ ApiKeyAuth: [] }]
-     */
-    const schema = Joi.object({
-        id: Joi.number().required(),
-        firstname: Joi.string(),
-        lastname: Joi.string(),
-        adress: Joi.string(),
-        city: Joi.string(),
-        zip: Joi.string(),
-        country: Joi.string(),
-        phone: Joi.string(),
-        birthdate: Joi.date()
-    });
-    const { error } = schema.validate({ ...req.params, ...req.body });
-    if (error) return respondError(res, error);
-
-    const id = parseInt(req.params.id);
-    const { token } = res.locals;
-    const { firstname, lastname, adress, city, zip, country, phone, birthdate } = req.body;
-
-    if (id !== token.id) // TODO : Check if user is admin too
-        return respondError(res, HTTPError.Unauthorized());
-        
-    const newProfile = await controller.setUserProfile(
-        id,
-        { firstname, lastname, adress, city, zip, country, phone, birthdate }
-    );
-    respond(res, User.MESSAGES.UPDATED, newProfile);
-});
-
-// Delete a user profile
-router.delete('/:id/profile', authuser, async (req, res) => {
-    /**
-     * #swagger.tags = ['Users']
-     * #swagger.description = 'Delete a user profile by its ID'
-     * #swagger.operationId = 'deleteUserProfileById'
-     * #swagger.security = [{ ApiKeyAuth: [] }]
-     */
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    const { error } = schema.validate(req.params);
-    if (error) return respondError(res, error);
-
-    const id = parseInt(req.params.id);
-    const { token } = res.locals;
-
-    if (id !== token.id) // TODO : Check if user is admin too
-        return respondError(res, HTTPError.Unauthorized());
-
-    await controller.deleteUserProfile(id);
 });
 
 export default router;

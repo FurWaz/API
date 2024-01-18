@@ -49,7 +49,7 @@ router.delete('/', authuser, async (req, res) => {
 });
 
 // Get cart product
-router.get('/product/:productId', authuser, async (req, res) => {
+router.get('/products/:productId', authuser, async (req, res) => {
     /**
      * #swagger.tags = ['Cart']
      * #swagger.description = 'Get cart product'
@@ -74,7 +74,7 @@ router.get('/product/:productId', authuser, async (req, res) => {
 });
 
 // Update cart product
-router.patch('/product/:productId', authuser, async (req, res) => {
+router.patch('/products/:productId', authuser, async (req, res) => {
     /**
      * #swagger.tags = ['Cart']
      * #swagger.description = 'Update cart product'
@@ -85,13 +85,13 @@ router.patch('/product/:productId', authuser, async (req, res) => {
         productId: Joi.number().required(),
         quantity: Joi.number().min(1).required()
     });
-    const { error } = schema.validate(req.params);
+    const { error } = schema.validate({...req.params, ...req.body});
     if (error) return respondError(res, error);
 
     try {
         const token = res.locals.token as TokenDataAccess;
         const productId = parseInt(req.params.productId);
-        const quantity = parseInt(req.params.quantity);
+        const quantity = parseInt(req.body.quantity);
         const product = await controller.updateUserProduct(productId, token.id, quantity);
         respond(res, Product.MESSAGES.UPDATED, product);
     } catch (err) {
@@ -101,7 +101,7 @@ router.patch('/product/:productId', authuser, async (req, res) => {
 });
 
 // Delete cart product
-router.delete('/product/:productId', authuser, async (req, res) => {
+router.delete('/products/:productId', authuser, async (req, res) => {
     /**
      * #swagger.tags = ['Cart']
      * #swagger.description = 'Delete cart product'

@@ -218,6 +218,94 @@
         ]
       }
     },
+    "/users/me/profile": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Get the user profile that is logged in",
+        "operationId": "getOwnUserProfile",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Update a user profile by its ID",
+        "operationId": "updateUserProfileById",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstname": {
+                  "example": "any"
+                },
+                "lastname": {
+                  "example": "any"
+                },
+                "address": {
+                  "example": "any"
+                },
+                "city": {
+                  "example": "any"
+                },
+                "zip": {
+                  "example": "any"
+                },
+                "country": {
+                  "example": "any"
+                },
+                "phone": {
+                  "example": "any"
+                },
+                "birthdate": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Delete a user profile by its ID",
+        "operationId": "deleteUserProfileById",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/users/{id}": {
       "get": {
         "tags": [
@@ -293,91 +381,6 @@
                 }
               }
             }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/users/{id}/profile": {
-      "patch": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Update a user profile by its ID",
-        "operationId": "updateUserProfileById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "firstname": {
-                  "example": "any"
-                },
-                "lastname": {
-                  "example": "any"
-                },
-                "adress": {
-                  "example": "any"
-                },
-                "city": {
-                  "example": "any"
-                },
-                "zip": {
-                  "example": "any"
-                },
-                "country": {
-                  "example": "any"
-                },
-                "phone": {
-                  "example": "any"
-                },
-                "birthdate": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Delete a user profile by its ID",
-        "operationId": "deleteUserProfileById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": {
@@ -781,7 +784,7 @@
         ]
       }
     },
-    "/store/cart/": {
+    "/store/carts/": {
       "get": {
         "tags": [
           "Cart"
@@ -817,7 +820,7 @@
         ]
       }
     },
-    "/store/cart/product/{productId}": {
+    "/store/carts/products/{productId}": {
       "get": {
         "tags": [
           "Cart"
@@ -855,6 +858,18 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quantity": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -894,7 +909,7 @@
         ]
       }
     },
-    "/store/product/": {
+    "/store/products/": {
       "post": {
         "tags": [
           "Product"
@@ -953,7 +968,7 @@
         ]
       }
     },
-    "/store/product/{id}": {
+    "/store/products/{id}": {
       "get": {
         "tags": [
           "Product"
@@ -1082,6 +1097,35 @@
         ],
         "description": "Create a new product",
         "operationId": "createProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstname": {
+                  "example": "any"
+                },
+                "lastname": {
+                  "example": "any"
+                },
+                "address": {
+                  "example": "any"
+                },
+                "city": {
+                  "example": "any"
+                },
+                "zipcode": {
+                  "example": "any"
+                },
+                "saveInfos": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -1092,13 +1136,23 @@
             "ApiKeyAuth": []
           }
         ]
-      },
+      }
+    },
+    "/store/checkout/{id}": {
       "get": {
         "tags": [
           "Cart"
         ],
         "description": "Get own app products",
         "operationId": "getOwnAppProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -1109,6 +1163,23 @@
             "ApiKeyAuth": []
           }
         ]
+      }
+    },
+    "/store/checkout/webhook": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "stripe-signature",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/verify/email": {

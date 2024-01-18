@@ -91,9 +91,9 @@ router.patch('/:id', hasPerm(Roles.ADMIN), async (req, res) => {
      */
     const schema = Joi.object({
         id: Joi.number().required(),
-        name: Joi.string().required(),
-        description: Joi.string().required(),
-        price: Joi.number().required()
+        name: Joi.string(),
+        description: Joi.string(),
+        price: Joi.number()
     });
     const { error } = schema.validate({ ...req.params, ...req.body });
     if (error) return respondError(res, error);

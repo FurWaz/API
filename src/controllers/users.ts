@@ -170,6 +170,24 @@ export async function getPrivateUser(id: number): Promise<PrivateUser> {
     return user;
 }
 
+export async function getUserProfile(id: number) {
+    const userProfile = await prisma.userProfile.findUnique({ where: { userId: id } });
+    if (!userProfile) return userProfile;
+
+    return {
+        id: userProfile.userId,
+        userId: userProfile.userId,
+        firstname: userProfile.firstname,
+        lastname: userProfile.lastname,
+        address: userProfile.address,
+        city: userProfile.city,
+        zipcode: userProfile.zipcode,
+        country: userProfile.country,
+        phone: userProfile.phone,
+        birthdate: userProfile.birthdate,
+    };
+}
+
 export async function setUserProfile(id: number, infos: any) {
     const newUserProfile = await prisma.userProfile.upsert({
         where: { userId: id },

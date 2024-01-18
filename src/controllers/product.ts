@@ -8,7 +8,7 @@ export async function createProduct(name: string, description: string, price: nu
 }
 
 export async function getProduct(id: number): Promise<PublicProduct> {
-    return Product.getAsPrivate(id);
+    return Product.getAsPublic(id);
 }
 
 export async function getAppProducts(app: number, paginationInfos: PaginationInfos): Promise<PrivateProduct[]> {
