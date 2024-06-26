@@ -55,7 +55,7 @@ export async function sendPasswordResetEmail(email: string) {
             getRootDir() + 'mails/resetPassword.html',
             {
                 webhost: Config.webHost,
-                resetLink: `${Config.webHost}/reset/password?token=${passwordResetToken}`,
+                resetLink: `https://${Config.webHost}/reset/password?token=${passwordResetToken}`,
                 mailto: Config.mailContact
             }
         )
@@ -108,7 +108,7 @@ export async function createUser(pseudo: string, email: string, password: string
             getRootDir() + 'mails/verifyEmail.html',
             {
                 webhost: Config.webHost,
-                verifyLink: `${Config.webHost}/verify/email?token=${emailVerifyToken}`,
+                verifyLink: `https://${Config.webHost}/verify/email?token=${emailVerifyToken}`,
                 mailto: Config.mailContact
             }
         )
