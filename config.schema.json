@@ -42,14 +42,6 @@
                     "default": "openssl rand -base64 32",
                     "description": "The secret used to sign JWT tokens"
                 },
-                "stripeWebhookSecret": {
-                    "type": "string",
-                    "description": "The secret used by Stripe to sign webhooks"
-                },
-                "stripeKey": {
-                    "type": "string",
-                    "description": "The api key used to communicate with Stripe"
-                },
                 "refreshExpiration": {
                     "type": "string",
                     "default": "",

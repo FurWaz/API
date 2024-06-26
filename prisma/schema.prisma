@@ -18,9 +18,6 @@ datasource db {
 // -> profile (the user's personnal informations)
 // -> apps (the apps created by the user)
 // -> links (the user connections to apps through the portal)
-// -> products (the user's cart products)
-// -> purchases (the user's purchased products)
-// -> checkouts (the checkouts made by the user)
 // -> emailVerified (if the email has been verified)
 // -> verified (if the user is verified or not)
 model User {
@@ -32,9 +29,6 @@ model User {
     profile           UserProfile?
     apps              App[]          @relation("author")
     links             Link[]         @relation("user")
-    products          UserProduct[]  @relation("user")
-    purchases         UserPurchase[] @relation("user")
-    checkouts         Checkout[]     @relation("user")
     settings          UserSettings?
     emailVerified     Boolean        @default(false)
     verified          Boolean        @default(false)
@@ -116,7 +110,6 @@ model App {
     authorId     Int       @db.Int
     author       User      @relation("author", fields: [authorId], references: [id], onDelete: Cascade)
     links        Link[]    @relation("app")
-    products     Product[] @relation("product")
     createdAt    DateTime  @default(now())
     updatedAt    DateTime  @updatedAt
 }
@@ -134,105 +127,4 @@ model Link {
     user      User     @relation("user", fields: [userId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-}
-
-// Represents a user's cart product
-// -> userId (the cart/user id)
-// -> productId (the product id)
-// -> quantity (the quantity of the product in the cart)
-model UserProduct {
-    id         Int      @id @default(autoincrement())
-    userId     Int      @db.Int
-    user       User     @relation("user", fields: [userId], references: [id], onDelete: Cascade)
-    productId  Int      @db.Int
-    product    Product  @relation("product", fields: [productId], references: [id], onDelete: Cascade)
-    quantity   Int      @default(1)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-}
-
-// Represents a product
-// -> name (the product name)
-// -> description (the product description)
-// -> price (the product price)
-// -> app (the app associated to the product)
-model Product {
-    id          Int            @id @default(autoincrement())
-    name        String         @db.VarChar(64)
-    description String         @db.Text
-    price       Float          @db.Float
-    appId       Int            @db.Int
-    app         App            @relation("product", fields: [appId], references: [id], onDelete: Cascade)
-    carts       UserProduct[]  @relation("product")
-    purchases   UserPurchase[] @relation("product")
-    createdAt   DateTime       @default(now())
-    updatedAt   DateTime       @updatedAt
-}
-
-// Represents a product purchased by a user
-// -> id (the purchase id)
-// -> userId (the user id)
-// -> productId (the product id)
-// -> quantity (the quantity of the product purchased)
-model UserPurchase {
-    id         Int        @id @default(autoincrement())
-    userId     Int        @db.Int
-    user       User       @relation("user", fields: [userId], references: [id], onDelete: Cascade)
-    productId  Int        @db.Int
-    product    Product    @relation("product", fields: [productId], references: [id], onDelete: Cascade)
-    quantity   Int        @db.Int
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
-}
-
-// Represents a checkout session
-// -> id (the checkout session id)
-// -> userId (the user id)
-// -> firstname (the firstname of the user)
-// -> lastname (the lastname of the user)
-// -> email (the email of the user)
-// -> address (the address of the user)
-// -> city (the city of the user)
-// -> zipcode (the zip code of the user)
-// -> products (the products in the checkout session)
-// -> status (the status of the checkout session)
-// -> intentId (the payment intent id)
-model Checkout {
-    id         Int            @id @default(autoincrement())
-    userId     Int            @db.Int
-    user       User           @relation("user", fields: [userId], references: [id], onDelete: Cascade)
-    firstname  String         @db.VarChar(64)
-    lastname   String         @db.VarChar(64)
-    email      String         @db.VarChar(255)
-    address    String         @db.VarChar(255)
-    city       String         @db.VarChar(64)
-    zipcode    String         @db.VarChar(16)
-    amount     Float          @db.Float
-    products   CheckoutProduct[]
-    statusId   Int
-    status     CheckoutStatus @relation("status", fields: [statusId], references: [id], onDelete: Cascade)
-    intentId   String         @unique @db.VarChar(64)
-    createdAt  DateTime       @default(now())
-    updatedAt  DateTime       @updatedAt
-}
-
-model CheckoutProduct {
-    id         Int        @id @default(autoincrement())
-    checkoutId Int        @db.Int
-    checkout   Checkout   @relation(fields: [checkoutId], references: [id], onDelete: Cascade)
-    productId  Int        @db.Int
-    quantity   Int        @db.Int
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
-}
-
-// Represents a checkout status
-// -> id (the checkout status id)
-// -> name (the checkout status name)
-model CheckoutStatus {
-    id        Int        @id @default(autoincrement())
-    name      String     @unique @db.VarChar(64)
-    checkouts Checkout[] @relation("status")
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
 }

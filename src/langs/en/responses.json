@@ -15,9 +15,5 @@
     "PortalUserRetrieved": "Portal user retrieved successfully",
     "PortalAppRetrieved": "Portal app retrieved successfully",
     "TokenVerified": "Token verified successfully",
-    "PortalUserConnected": "Connected through portal successfully",
-    "BuyTokenGenerated": "Buy token generated successfully",
-    "BuyInfosFetched": "Buy infos fetched successfully",
-    "BuyAccepted": "Buy accepted successfully",
-    "PayementIntentCreated": "Payement intent created successfully"
+    "PortalUserConnected": "Connected through portal successfully"
 }

@@ -1,7 +1,4 @@
 {
     "User": "User",
-    "App": "App",
-    "Product": "Product",
-    "Cart": "Cart",
-    "Checkout": "Checkout"
+    "App": "App"
 }
