@@ -26,49 +26,12 @@ model User {
     email             String         @unique @db.VarChar(255)
     password          String         @db.Text
     roles             UserRoles[]
-    profile           UserProfile?
     apps              App[]          @relation("author")
     links             Link[]         @relation("user")
-    settings          UserSettings?
     emailVerified     Boolean        @default(false)
     verified          Boolean        @default(false)
     createdAt         DateTime       @default(now())
     updatedAt         DateTime       @updatedAt
-}
-
-// Represents a user profile
-// -> userId (the profile's user's id)
-// -> firstname (the firstname of the user)
-// -> lastname (the lastname of the user)
-// -> address (the address of the user)
-// -> city (the city of the user)
-// -> zipcode (the zip code of the user)
-model UserProfile {
-    id        Int       @id @default(autoincrement())
-    userId    Int       @unique
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    firstname String    @db.VarChar(64)
-    lastname  String    @db.VarChar(64)
-    address   String    @db.VarChar(255)
-    city      String    @db.VarChar(64)
-    zipcode   String    @db.VarChar(16)
-    country   String?   @db.VarChar(64)
-    phone     String?   @db.VarChar(16)
-    birthdate DateTime? @db.DateTime
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-}
-
-// Represents a user settings
-// -> userId (the settings's user's id)
-
-model UserSettings {
-    id           Int      @id @default(autoincrement())
-    userId       Int      @unique
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    storeProfile Boolean  @default(true)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
 }
 
 // Represents a role

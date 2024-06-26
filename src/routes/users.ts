@@ -5,7 +5,6 @@ import { PrivateUser, User } from 'models/User.ts';
 import { respondError, respond } from 'tools/Responses.ts';
 import { auth, authuser } from 'middleware/auth.ts';
 import HTTPError from 'errors/HTTPError.ts';
-import { TokenDataAccess } from 'tools/Token.ts';
 const router = express.Router();
 
 // Create a new user
@@ -90,63 +89,6 @@ router.delete('/me', authuser, async (req, res) => {
         await controller.deleteUser(token.id, req.body.password);
         respond(res, User.MESSAGES.DELETED);
     } catch (err) { respondError(res, err); }
-});
-
-// Get my user profile
-router.get('/me/profile', authuser, async (req, res) => {
-    /**
-     * #swagger.tags = ['Users']
-     * #swagger.description = 'Get the user profile that is logged in'
-     * #swagger.operationId = 'getOwnUserProfile'
-     * #swagger.security = [{ ApiKeyAuth: [] }]
-     */
-    const token = res.locals.token as TokenDataAccess;
-    const profile = await controller.getUserProfile(token.id);
-    respond(res, User.MESSAGES.FETCHED, profile);
-});
-
-// Update my user profile
-router.patch('/me/profile', authuser, async (req, res) => {
-    /**
-     * #swagger.tags = ['Users']
-     * #swagger.description = 'Update a user profile by its ID'
-     * #swagger.operationId = 'updateUserProfileById'
-     * #swagger.security = [{ ApiKeyAuth: [] }]
-     */
-    const schema = Joi.object({
-        firstname: Joi.string(),
-        lastname: Joi.string(),
-        address: Joi.string(),
-        city: Joi.string(),
-        zip: Joi.string(),
-        country: Joi.string(),
-        phone: Joi.string(),
-        birthdate: Joi.date()
-    });
-    const { error } = schema.validate({ ...req.body });
-    if (error) return respondError(res, error);
-
-    const token = res.locals.token as TokenDataAccess;
-    const { firstname, lastname, address, city, zip, country, phone, birthdate } = req.body;
-        
-    const newProfile = await controller.setUserProfile(
-        token.id,
-        { firstname, lastname, address, city, zip, country, phone, birthdate }
-    );
-    respond(res, User.MESSAGES.UPDATED, newProfile);
-});
-
-// Delete my user profile
-router.delete('/me/profile', authuser, async (req, res) => {
-    /**
-     * #swagger.tags = ['Users']
-     * #swagger.description = 'Delete a user profile by its ID'
-     * #swagger.operationId = 'deleteUserProfileById'
-     * #swagger.security = [{ ApiKeyAuth: [] }]
-     */
-
-    const token = res.locals.token as TokenDataAccess;
-    await controller.deleteUserProfile(token.id);
 });
 
 // Get a user by its ID

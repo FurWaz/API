@@ -28,11 +28,7 @@ export interface PublicUser {
 export class User {
     public static privateIncludes = {
         roles: true,
-        apps: true,
-        profile: true,
-        settings: true,
-        purchases: true,
-        checkouts: true
+        apps: true
     };
     public static publicIncludes = {
         roles: true,
@@ -100,10 +96,6 @@ export class User {
             email: obj.email as string,
             roles: obj.roles?.map((r: any) => (typeof(r) === 'object')? r.id: r) as number[] || [],
             apps: obj.apps?.map((a: any) => (typeof(a) === 'object')? a.id: a) as number[] || [],
-            profile: obj.profile as number || null,
-            settings: obj.settings as number || null,
-            purchases: obj.purchases?.map((p: any) => (typeof(p) === 'object')? p.id: p) as number[] || [],
-            checkouts: obj.checkouts?.map((c: any) => (typeof(c) === 'object')? c.id: c) as number[] || [],
             verified: obj.verified as boolean
         } as PrivateUser;
     }
