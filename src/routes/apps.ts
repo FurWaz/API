@@ -3,7 +3,7 @@ import Joi from 'joi';
 import * as controller from '../controllers/apps.ts';
 import { App } from 'models/App.ts';
 import { respondError, respond } from 'tools/Responses.ts';
-import { auth, authuser } from 'middleware/auth.ts';
+import { mayAuth, authuser } from 'middleware/auth.ts';
 import { getRequestPagination, getPaginationResult } from 'tools/Pagination.ts';
 import { prisma } from 'index.ts';
 const router = express.Router();
@@ -67,7 +67,7 @@ router.get('/me', authuser, async (req, res) => {
 });
 
 // Get an app by its ID
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', mayAuth, async (req, res) => {
     /**
      * #swagger.tags = ['Apps']
      * #swagger.description = 'Get an app by its ID'
@@ -84,7 +84,7 @@ router.get('/:id', auth, async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const app = await controller.getAppAsUser(token.id, id);
+        const app = await controller.getAppAsUser(token?.id, id);
         respond(res, App.MESSAGES.FETCHED, app);
     } catch (err) { respondError(res, err); }
 });

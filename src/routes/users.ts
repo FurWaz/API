@@ -3,7 +3,7 @@ import Joi from 'joi';
 import * as controller from '../controllers/users.ts';
 import { PrivateUser, User } from 'models/User.ts';
 import { respondError, respond } from 'tools/Responses.ts';
-import { auth, authuser } from 'middleware/auth.ts';
+import { auth, authuser, mayAuth } from 'middleware/auth.ts';
 import HTTPError from 'errors/HTTPError.ts';
 const router = express.Router();
 
@@ -92,7 +92,7 @@ router.delete('/me', authuser, async (req, res) => {
 });
 
 // Get a user by its ID
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', mayAuth, async (req, res) => {
     /**
      * #swagger.tags = ['Users']
      * #swagger.description = 'Get a user by its ID'
@@ -109,7 +109,7 @@ router.get('/:id', auth, async (req, res) => {
     const id = parseInt(req.params.id);
 
     // TODO : Check if user is admin too
-    const shouldBePrivate = token.id === id;
+    const shouldBePrivate = token?.id === id;
 
     const user = await (shouldBePrivate? User.getAsPrivate: User.getAsPublic)(id);
     if (!user) return respondError(res, new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message));

@@ -77,7 +77,7 @@ export async function getPrivateApp(id: number): Promise<PrivateApp> {
     return user;
 }
 
-export async function getAppAsUser(userId: number, appId: number): Promise<PublicApp> {
+export async function getAppAsUser(userId: number|undefined, appId: number): Promise<PublicApp> {
     const app = await App.getAsPrivate(appId);
     if (app === null)
         throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);

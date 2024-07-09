@@ -218,94 +218,6 @@
         ]
       }
     },
-    "/users/me/profile": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Get the user profile that is logged in",
-        "operationId": "getOwnUserProfile",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      },
-      "patch": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Update a user profile by its ID",
-        "operationId": "updateUserProfileById",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "firstname": {
-                  "example": "any"
-                },
-                "lastname": {
-                  "example": "any"
-                },
-                "address": {
-                  "example": "any"
-                },
-                "city": {
-                  "example": "any"
-                },
-                "zip": {
-                  "example": "any"
-                },
-                "country": {
-                  "example": "any"
-                },
-                "phone": {
-                  "example": "any"
-                },
-                "birthdate": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Delete a user profile by its ID",
-        "operationId": "deleteUserProfileById",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
     "/users/{id}": {
       "get": {
         "tags": [
@@ -819,74 +731,6 @@
         }
       }
     },
-    "PrivateProduct": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "number",
-          "example": 0
-        },
-        "name": {
-          "type": "string",
-          "example": "string"
-        },
-        "description": {
-          "type": "string",
-          "example": "string"
-        },
-        "price": {
-          "type": "number",
-          "example": 0
-        },
-        "app": {
-          "type": "number",
-          "example": 0
-        },
-        "carts": {
-          "type": "array",
-          "example": [
-            0
-          ],
-          "items": {
-            "type": "number"
-          }
-        },
-        "purchases": {
-          "type": "array",
-          "example": [
-            0
-          ],
-          "items": {
-            "type": "number"
-          }
-        }
-      }
-    },
-    "PublicProduct": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "number",
-          "example": 0
-        },
-        "name": {
-          "type": "string",
-          "example": "string"
-        },
-        "description": {
-          "type": "string",
-          "example": "string"
-        },
-        "price": {
-          "type": "number",
-          "example": 0
-        },
-        "app": {
-          "type": "number",
-          "example": 0
-        }
-      }
-    },
     "PrivateUser": {
       "type": "object",
       "properties": {
@@ -988,27 +832,6 @@
         "verified": {
           "type": "boolean",
           "example": true
-        }
-      }
-    },
-    "PrivateUserProduct": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "number",
-          "example": 0
-        },
-        "userId": {
-          "type": "number",
-          "example": 0
-        },
-        "productId": {
-          "type": "number",
-          "example": 0
-        },
-        "quantity": {
-          "type": "number",
-          "example": 0
         }
       }
     }

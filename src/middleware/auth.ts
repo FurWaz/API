@@ -39,6 +39,14 @@ export async function auth(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+export async function mayAuth(req: Request, res: Response, next: NextFunction) {
+    if (!req.headers.authorization) {
+        next();
+        return;
+    }
+    await auth(req, res, next);
+}
+
 export async function authuser(req: Request, res: Response, next: NextFunction) {
     await auth(req, res, () => {
         const { token } = res.locals;
