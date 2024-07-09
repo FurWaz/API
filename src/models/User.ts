@@ -28,7 +28,8 @@ export interface PublicUser {
 export class User {
     public static privateIncludes = {
         roles: true,
-        apps: true
+        apps: true,
+        links: true
     };
     public static publicIncludes = {
         roles: true,
