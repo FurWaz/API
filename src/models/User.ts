@@ -9,10 +9,7 @@ export interface PrivateUser {
     email: string;
     roles: number[];
     apps: number[];
-    profile: number;
-    settings: number;
-    purchases: number[];
-    checkouts: number[];
+    links: number[];
     verified: boolean;
 }
 
