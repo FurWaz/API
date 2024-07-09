@@ -3,7 +3,7 @@ import Joi from 'joi';
 import * as controller from '../controllers/users.ts';
 import { PrivateUser, User } from 'models/User.ts';
 import { respondError, respond } from 'tools/Responses.ts';
-import { auth, authuser, mayAuth } from 'middleware/auth.ts';
+import { authuser, mayAuth } from 'middleware/auth.ts';
 import HTTPError from 'errors/HTTPError.ts';
 const router = express.Router();
 
@@ -40,7 +40,6 @@ router.get('/me', authuser, async (req, res) => {
      * #swagger.security = [{ ApiKeyAuth: [] }]
      */
     const { token } = res.locals;
-    console.log('token : ', token);
 
     const user = await User.getAsPrivate(token.id);
     respond(res, User.MESSAGES.FETCHED, user);

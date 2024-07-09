@@ -94,6 +94,7 @@ export class User {
             email: obj.email as string,
             roles: obj.roles?.map((r: any) => (typeof(r) === 'object')? r.id: r) as number[] || [],
             apps: obj.apps?.map((a: any) => (typeof(a) === 'object')? a.id: a) as number[] || [],
+            links: obj.links?.map((l: any) => (typeof(l) === 'object')? l.id: l) as number[] || [],
             verified: obj.verified as boolean
         } as PrivateUser;
     }
