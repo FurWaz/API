@@ -34,7 +34,7 @@ export async function createApp(userId: number, name: string, description: strin
 export async function updateApp(userId: number, id: number, infos: any) {
     const app = await App.getAsPrivate(id);
     if (app === null)
-        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(App.MESSAGES.NOT_FOUND().status, App.MESSAGES.NOT_FOUND().message);
 
     if (app.authorId !== userId)
         throw HTTPError.Unauthorized();
@@ -55,7 +55,7 @@ export async function updateApp(userId: number, id: number, infos: any) {
 export async function deleteApp(userId: number, id: number) {
     const app = await App.getAsPrivate(id);
     if (app === null)
-        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(App.MESSAGES.NOT_FOUND().status, App.MESSAGES.NOT_FOUND().message);
 
     if (app.authorId !== userId)
         throw HTTPError.Unauthorized();
@@ -66,21 +66,21 @@ export async function deleteApp(userId: number, id: number) {
 export async function getPublicApp(id: number): Promise<PublicApp> {
     const user = await App.getAsPublic(id);
     if (user === null)
-        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(App.MESSAGES.NOT_FOUND().status, App.MESSAGES.NOT_FOUND().message);
     return user;
 }
 
 export async function getPrivateApp(id: number): Promise<PrivateApp> {
     const user = await App.getAsPrivate(id);
     if (user === null)
-        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(App.MESSAGES.NOT_FOUND().status, App.MESSAGES.NOT_FOUND().message);
     return user;
 }
 
 export async function getAppAsUser(userId: number|undefined, appId: number): Promise<PublicApp> {
     const app = await App.getAsPrivate(appId);
     if (app === null)
-        throw new HTTPError(App.MESSAGES.NOT_FOUND.status, App.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(App.MESSAGES.NOT_FOUND().status, App.MESSAGES.NOT_FOUND().message);
 
     if (app.authorId !== userId)
         return App.makePublic(app);

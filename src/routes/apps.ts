@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
         const pag = getRequestPagination(req);
         const apps = await controller.getAllApps(pag);
         const pagination = await getPaginationResult(pag, async () => await prisma.app.count());
-        respond(res, App.MESSAGES.FETCHED, { apps, pagination });
+        respond(res, App.MESSAGES.FETCHED(), { apps, pagination });
     } catch (err) { respondError(res, err); }
 });
 
@@ -44,7 +44,7 @@ router.post('/', authuser, async (req, res) => {
 
     try {
         const app = await controller.createApp(token.id, name, description);
-        respond(res, App.MESSAGES.CREATED, app);
+        respond(res, App.MESSAGES.CREATED(), app);
     } catch (err) { respondError(res, err); }
 });
 
@@ -62,7 +62,7 @@ router.get('/me', authuser, async (req, res) => {
     try {
         const apps = await controller.getOwnApps(token.id, pag);
         const pagination = await getPaginationResult(pag, async () => await prisma.app.count({ where: { authorId: token.id } }));
-        respond(res, App.MESSAGES.FETCHED, { apps, pagination });
+        respond(res, App.MESSAGES.FETCHED(), { apps, pagination });
     } catch (err) { respondError(res, err); }
 });
 
@@ -85,7 +85,7 @@ router.get('/:id', mayAuth, async (req, res) => {
 
     try {
         const app = await controller.getAppAsUser(token?.id, id);
-        respond(res, App.MESSAGES.FETCHED, app);
+        respond(res, App.MESSAGES.FETCHED(), app);
     } catch (err) { respondError(res, err); }
 });
 
@@ -111,7 +111,7 @@ router.patch('/:id', authuser, async (req, res) => {
 
     try {
         const app = await controller.updateApp(token.id, id, { name, description });
-        respond(res, App.MESSAGES.UPDATED, app);
+        respond(res, App.MESSAGES.UPDATED(), app);
     } catch (err) { respondError(res, err); }
 });
 
@@ -134,7 +134,7 @@ router.delete('/:id', authuser, async (req, res) => {
 
     try {
         await controller.deleteApp(token.id, id);
-        respond(res, App.MESSAGES.DELETED);
+        respond(res, App.MESSAGES.DELETED());
     } catch (err) { respondError(res, err); }
 });
 

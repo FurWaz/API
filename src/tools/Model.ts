@@ -2,15 +2,15 @@ import HTTP from "./HTTP.ts";
 import Lang from "./Lang.ts";
 import { ResponseMessage } from "./Responses.ts";
 
-export function buildResourceMessages(resource: string) {
+export function buildResourceMessages(translationContext: any) {
     return {
-        CREATED:   buildCreateMessage(resource),
-        UPDATED:   buildUpdateMessage(resource),
-        DELETED:   buildDeleteMessage(resource),
-        FETCHED:   buildFetchMessage(resource),
-        NOT_FOUND: buildNotFoundMessage(resource),
-        ADDED:     buildMessage(resource, 'Added', HTTP.OK),
-        REMOVED:   buildMessage(resource, 'Removed', HTTP.OK)
+        CREATED:   () => buildCreateMessage(Lang.GetText(translationContext)),
+        UPDATED:   () => buildUpdateMessage(Lang.GetText(translationContext)),
+        DELETED:   () => buildDeleteMessage(Lang.GetText(translationContext)),
+        FETCHED:   () => buildFetchMessage(Lang.GetText(translationContext)),
+        NOT_FOUND: () => buildNotFoundMessage(Lang.GetText(translationContext)),
+        ADDED:     () => buildMessage(Lang.GetText(translationContext), 'Added', HTTP.OK),
+        REMOVED:   () => buildMessage(Lang.GetText(translationContext), 'Removed', HTTP.OK)
     };
 }
 

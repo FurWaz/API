@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
 
     try {
         const tokens = await controller.getUserTokens(pseudo, email, password);
-        respond(res, User.MESSAGES.LOGGED_IN, tokens);
+        respond(res, User.MESSAGES.LOGGED_IN(), tokens);
     } catch (err) { respondError(res, err); }
 });
 
@@ -52,7 +52,7 @@ router.get('/token', async (req, res) => {
         const data = await TokenUtils.decode(token);
 
         const accessToken = await controller.getAccessToken(data);
-        respond(res, User.MESSAGES.TOKEN_REFRESHED, { token: accessToken });
+        respond(res, User.MESSAGES.TOKEN_REFRESHED(), { token: accessToken });
     } catch (err) { respondError(res, err); }
 });
 

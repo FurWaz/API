@@ -16,7 +16,6 @@ export interface PrivateUser {
 export interface PublicUser {
     id: number;
     pseudo: string;
-    email: string;
     roles: number[];
     apps: number[];
     verified: boolean;
@@ -34,17 +33,15 @@ export class User {
     };
 
     public static MESSAGES = {
-        ...buildResourceMessages(Lang.GetText(
-            Lang.CreateTranslationContext('models', 'User')
-        )),
-        LOGGED_IN: {
+        ...buildResourceMessages(Lang.CreateTranslationContext('models', 'User')),
+        LOGGED_IN: () => ({
             message: Lang.GetText(Lang.CreateTranslationContext('responses', 'LoggedIn')),
             status: 200
-        },
-        TOKEN_REFRESHED: {
+        }),
+        TOKEN_REFRESHED: () => ({
             message: Lang.GetText(Lang.CreateTranslationContext('responses', 'TokenRefreshed')),
             status: 200
-        }
+        })
 };
 
     public static async create(pseudo: string, email: string, password: string): Promise<PrivateUser> {
@@ -78,7 +75,6 @@ export class User {
         return {
             id: obj.id,
             pseudo: obj.pseudo,
-            email: obj.email,
             roles: obj.roles?.map((r: any) => (typeof(r) === 'object')? r.id: r) as number[] || [],
             apps: obj.apps?.map((a: any) => (typeof(a) === 'object')? a.id: a) as number[] || [],
             verified: obj.verified,

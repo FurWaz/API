@@ -1,0 +1,19 @@
+{
+    "Created":  "${resource} créé avec succès",
+    "Updated":  "${resource} mis à jour avec succès",
+    "Deleted":  "${resource} supprimé avec succès",
+    "Fetched":  "${resource} récupéré avec succès",
+    "NotFound": "${resource} introuvable",
+    "Added":    "${resource} ajouté avec succès",
+    "Removed":  "${resource} supprimé avec succès",
+    "UserEmailVerified": "Email utilisateur vérifié avec succès",
+    "UserPasswordReset": "Réinitialisation du mot de passe utilisateur réussie",
+    "PasswordResetEmailSent": "Email de réinitialisation du mot de passe envoyé avec succès",
+    "LoggedIn": "Connecté avec succès",
+    "TokenRefreshed": "Jeton rafraîchi avec succès",
+    "PortalTokenGenerated": "Jeton de portail généré avec succès",
+    "PortalUserRetrieved": "Utilisateur du portail récupéré avec succès",
+    "PortalAppRetrieved": "Application du portail récupérée avec succès",
+    "TokenVerified": "Jeton vérifié avec succès",
+    "PortalUserConnected": "Connecté via le portail avec succès"
+}

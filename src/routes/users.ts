@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
     let user: PrivateUser;
     try {
         user = await controller.createUser(pseudo, email, password);
-        respond(res, User.MESSAGES.CREATED, user);
+        respond(res, User.MESSAGES.CREATED(), user);
     } catch (err) { respondError(res, err); }
 });
 
@@ -42,7 +42,7 @@ router.get('/me', authuser, async (req, res) => {
     const { token } = res.locals;
 
     const user = await User.getAsPrivate(token.id);
-    respond(res, User.MESSAGES.FETCHED, user);
+    respond(res, User.MESSAGES.FETCHED(), user);
 });
 
 // Update own user
@@ -65,7 +65,7 @@ router.patch('/me', authuser, async (req, res) => {
     const { token } = res.locals;
 
     const newUser = await controller.setUserInfos(token.id, req.body);
-    respond(res, User.MESSAGES.UPDATED, newUser);
+    respond(res, User.MESSAGES.UPDATED(), newUser);
 });
 
 // Delete own user
@@ -86,7 +86,7 @@ router.delete('/me', authuser, async (req, res) => {
 
     try {
         await controller.deleteUser(token.id, req.body.password);
-        respond(res, User.MESSAGES.DELETED);
+        respond(res, User.MESSAGES.DELETED());
     } catch (err) { respondError(res, err); }
 });
 
@@ -111,8 +111,8 @@ router.get('/:id', mayAuth, async (req, res) => {
     const shouldBePrivate = token?.id === id;
 
     const user = await (shouldBePrivate? User.getAsPrivate: User.getAsPublic)(id);
-    if (!user) return respondError(res, new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message));
-    respond(res, User.MESSAGES.FETCHED, user);
+    if (!user) return respondError(res, new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message));
+    respond(res, User.MESSAGES.FETCHED(), user);
 });
 
 // Update a user by its ID
@@ -140,7 +140,7 @@ router.patch('/:id', authuser, async (req, res) => {
         return respondError(res, HTTPError.Unauthorized());
 
     await controller.setUserInfos(id, req.body);
-    respond(res, User.MESSAGES.UPDATED);
+    respond(res, User.MESSAGES.UPDATED());
 });
 
 // Delete a user by its ID
@@ -166,7 +166,7 @@ router.delete('/:id', authuser, async (req, res) => {
 
     try {
         await controller.deleteUser(id, req.body.password);
-        respond(res, User.MESSAGES.DELETED);
+        respond(res, User.MESSAGES.DELETED());
     } catch (err) { respondError(res, err); }
 });
 

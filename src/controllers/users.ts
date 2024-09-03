@@ -35,7 +35,7 @@ export async function verifyUserEmail(token: string) {
 
     const user = await prisma.user.findUnique({ where: { id: payload.id } });
     if (user === null)
-        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message);
     if (user.emailVerified)
         throw new HTTPError(HTTP.EXPIRED_TOKEN, Lang.GetText(Lang.CreateTranslationContext('errors', 'EmailAlreadyVerified')));
 
@@ -45,7 +45,7 @@ export async function verifyUserEmail(token: string) {
 export async function sendPasswordResetEmail(email: string) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (user === null)
-        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message);
 
     const passwordResetToken = await createPasswordResetToken(user.id);
     Mailer.sendMail(
@@ -69,7 +69,7 @@ export async function resetPassword(token: string, password: string) {
 
     const user = await prisma.user.findUnique({ where: { id: payload.id } });
     if (user === null)
-        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message);
 
     await prisma.user.update({ where: { id: payload.id }, data: { password: await Password.hash(password) } });
 }
@@ -123,7 +123,7 @@ export async function createUser(pseudo: string, email: string, password: string
 export async function setUserInfos(id: number, infos: any) {
     const user = await prisma.user.findUnique({ where: { id } });
     if (user === null)
-        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message);
 
     if (infos.password !== undefined) {
         if (infos.oldPassword === undefined)
@@ -148,7 +148,7 @@ export async function setUserInfos(id: number, infos: any) {
 export async function deleteUser(id: number, password: string) {
     const user = await prisma.user.findUnique({ where: { id } });
     if (user === null)
-        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message);
 
     if (!await Password.compare(password, user.password))
         throw HTTPError.InvalidPassword();
@@ -159,13 +159,13 @@ export async function deleteUser(id: number, password: string) {
 export async function getPublicUser(id: number): Promise<PublicUser> {
     const user = await User.getAsPublic(id);
     if (user === null)
-        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message);
     return user;
 }
 
 export async function getPrivateUser(id: number): Promise<PrivateUser> {
     const user = await User.getAsPrivate(id);
     if (user === null)
-        throw new HTTPError(User.MESSAGES.NOT_FOUND.status, User.MESSAGES.NOT_FOUND.message);
+        throw new HTTPError(User.MESSAGES.NOT_FOUND().status, User.MESSAGES.NOT_FOUND().message);
     return user;
 }

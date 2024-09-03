@@ -45,12 +45,12 @@ async function resolvePortal(token: string, res?: Response) {
     const user = await User.getAsPublic(infos.userId);
     if (user === null)
         throw new HTTPError(
-            User.MESSAGES.NOT_FOUND.status,
-            User.MESSAGES.NOT_FOUND.message
+            User.MESSAGES.NOT_FOUND().status,
+            User.MESSAGES.NOT_FOUND().message
         );
     
     deletePortal(token);
-    respond(infos.response, User.MESSAGES.FETCHED, user);
+    respond(infos.response, User.MESSAGES.FETCHED(), user);
 }
 
 export async function generatePortalToken(appId: number) {
@@ -92,8 +92,8 @@ export async function getPortalApp(token: string) {
     const app = await App.getAsPublic(infos.appId);
     if (app === null)
         throw new HTTPError(
-            App.MESSAGES.NOT_FOUND.status,
-            App.MESSAGES.NOT_FOUND.message
+            App.MESSAGES.NOT_FOUND().status,
+            App.MESSAGES.NOT_FOUND().message
         );
     
     return app;
