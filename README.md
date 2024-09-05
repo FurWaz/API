@@ -59,23 +59,23 @@ For better development experience, this project also uses:
 ## Sub-Projects
 Here is a non-exhaustive list of projects using this API (for Users management or other features):
 
-- ### [FullBowody](https://fullbowody.projects.furwaz.fr) : A desktop application to track your body in 3D.
+- ### [FullBowody](https://fullbowody.com) : A desktop application to track your body in 3D.
     - [Source code](https://github.com/FullBowody) hosted on GitHub.
-    - [Website](https://fullbowody.projects.furwaz.fr) hosted on FurWaz's server.
-    - [API](https://fullbowody.apis.furwaz.fr) hosted on FurWaz's server.
+    - [Website](https://fullbowody.projects.furwaz.com) hosted on FurWaz's server.
+    - [API](https://api.fullbowody.com) hosted on FurWaz's server.
 
-- [VyBeen](https://vybeen.projects.furwaz.fr) : A web application to listen to music with your friends.
+- ### [VyBeen](https://vybeen.projects.furwaz.com) : A web application to listen to music with your friends.
     - [Source code](https://github.com/VyBeen) hosted on GitHub.
-    - [Website](https://vybeen.projects.furwaz.fr) hosted on FurWaz's server.
-    - [API](https://vybeen.apis.furwaz.fr) hosted on FurWaz's server.
+    - [Website](https://vybeen.projects.furwaz.com) hosted on FurWaz's server.
+    - [API](https://vybeen.apis.furwaz.com) hosted on FurWaz's server.
 
-- [FurWaz](https://furwaz.fr) : A portfolio and platform to host FurWaz's projects and FurWaz's login portals.
+- ### [FurWaz](https://furwaz.com) : A portfolio and platform to host FurWaz's projects and FurWaz's login portals.
     - [Source code](https://github.com/FurWaz/Website) hosted on GitHub.
-    - [Website](https://furwaz.fr) hosted on FurWaz's server.
-    - [API](https://main.apis.furwaz.fr) hosted on FurWaz's server.
+    - [Website](https://furwaz.com) hosted on FurWaz's server.
+    - [API](https://api.furwaz.com) hosted on FurWaz's server.
 
 ## License
 This project is licensed under the [GPL-3.0 License](./LICENSE).
 
 ## Contact
-For further information, you can contact me at [contact@furwaz.fr](mailto:contact@furwaz.fr).
+For further information, you can contact me at [contact@furwaz.com](mailto:contact@furwaz.com).

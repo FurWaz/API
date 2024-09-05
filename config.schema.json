@@ -13,7 +13,7 @@
         },
         "host": {
             "type": "string",
-            "default": "main.apis.furwaz.fr"
+            "default": "api.furwaz.com"
         },
         "port": {
             "type": "integer",
@@ -22,11 +22,11 @@
         },
         "mailContact": {
             "type": "string",
-            "default": "contact@furwaz.fr"
+            "default": "contact@furwaz.com"
         },
         "webHost": {
             "type": "string",
-            "default": "furwaz.fr",
+            "default": "furwaz.com",
             "description": "The host address of the web page (used for emails and CORS)"
         },
         "security": {
@@ -84,7 +84,7 @@
                 },
                 "from": {
                     "type": "string",
-                    "default": "FurWaz <noreply@furwaz.fr>"
+                    "default": "FurWaz <noreply@furwaz.com>"
                 },
                 "host": {
                     "type": "string",
