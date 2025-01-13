@@ -108,7 +108,7 @@ export async function createUser(pseudo: string, email: string, password: string
             getRootDir() + 'mails/verifyEmail.html',
             {
                 webhost: Config.webHost,
-                verifyLink: `https://${Config.webHost}/verify/email?token=${emailVerifyToken}`,
+                verifyLink: `https://${Config.webHost}/verify-email?token=${emailVerifyToken}`,
                 mailto: Config.mailContact
             }
         )
