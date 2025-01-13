@@ -55,7 +55,7 @@ export async function sendPasswordResetEmail(email: string) {
             getRootDir() + 'mails/resetPassword.html',
             {
                 webhost: Config.webHost,
-                resetLink: `https://${Config.webHost}/reset/password?token=${passwordResetToken}`,
+                resetLink: `https://${Config.webHost}/reset-password?token=${passwordResetToken}`,
                 mailto: Config.mailContact
             }
         )

@@ -8,19 +8,29 @@
 <body style="font-family: Arial, Helvetica, sans-serif; padding: 1em; margin: 0;">
     <center>
         <div style="background-color: #334155; color: #f8fafc; border-radius: 12px; width: fit-content; overflow: hidden;">
-            <div style="background-color: #475569; color: #f8fafc; padding: 0; margin: 0">
-                <center>
-                    <div style="padding: 1em;">
-                        <img
-                            src="https://${webhost}/img/icon.png"
-                            style="width: 100px; height: 100px;"
-                            alt="Logo"
-                        >
-                        <h1> ${Lang::mailVerifyEmail/subject} </h1>
-                    </div>
-                </center>
-            </div>
-            <div style="background-color: #1e293b; height: 0.3em; padding: 0; margin: 0;"></div>
+            <center>
+                <div style="padding: 1em;">
+                    <svg style="width: 6em; height: 6em;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 250 250" stroke-width="14" stroke="currentColor">
+                        <path d="M-45,34" />
+                        <path d="M144,52" />
+                        <path d="M198,196" />
+                        <path d="M36,70" />
+                        <path d="M135,178" />
+                        <path d="M270,106" />
+                        <g>
+                            <polygon
+                                points="54,142 98.9,178.1 116.9,196 135,196 153,178.1 198,142.1 189,124 198,70 189,52 153,88 99,88 63,52 54,70 63,124" />
+                            <g>
+                                <path fill="currentColor"
+                                    d="M54,142.1l44.9,9c0,0,0,0,0,0l18,44.9c0,0,0,0,0,0l-17.9-17.9c0,0,0,0,0,0L54,142.1 C54,142.1,54,142.1,54,142.1z" />
+                                <path fill="currentColor"
+                                    d="M198,142.1l-45,9c0,0,0,0,0,0L135,196c0,0,0,0.1,0,0l17.9-17.9c0,0,0,0,0,0L198,142.1 C198,142.1,198,142.1,198,142.1z" />
+                            </g>
+                        </g>
+                    </svg>
+                    <h1 style="text-align: center;"> ${Lang::mailVerifyEmail/subject} </h1>
+                </div>
+            </center>
             <div style="padding: 1em; margin: 0">
                 <center>
                     <div style="max-width: 400px; height: fit-content;">
@@ -32,7 +42,7 @@
                             href="${verifyLink}"
                             style="text-decoration: none;"
                         >
-                            <div style="background-color: #f97316; color: white; border-radius: 4px; width: fit-content;">
+                            <div style="background-color: #8b5cf6; color: white; border-radius: 4px; width: fit-content;">
                                 <p style="font-size: large; padding: 1em; font-weight: bold;">
                                     ${Lang::mailVerifyEmail/button}
                                 </p>
